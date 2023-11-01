@@ -1,0 +1,33 @@
+php_flag session.bug_compat_warn off
+
+RewriteEngine On
+# RewriteBase /
+# RewriteRule ^home?$ home.php
+# RewriteRule ^page/([0-9a-zA-Z]+) ./index.php?page=$1
+# RewriteRule ^page/([0-9a-zA-Z]+)/([0-9a-zA-Z]+) index.php?page=$1&game=$2
+# RewriteCond %{REQUEST_FILENAME} !-d 
+# RewriteCond %{REQUEST_FILENAME} !-f 
+# RewriteCond %{REQUEST_FILENAME} !\.php$ 
+# RewriteRule ^page/(.*)/(.*)$ index.php?page=$1&game=$2 [L] 
+# RewriteRule ^page/(.*)/(.*)$ index.php?page=$1&id=$2 [L] 
+# RewriteRule ^page/(.*)$ index.php?page=$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^page/([0-9a-zA-Z]+) index.php?page=$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^game/([0-9a-zA-Z]+) index.php?page=game&game=$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^shop/([0-9a-zA-Z]+) index.php?page=product&id=$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^category/([0-9a-zA-Z]+) index.php?page=shop&category=$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^category_account/([0-9a-zA-Z]+) index.php?page=account&category=$1 [L]
