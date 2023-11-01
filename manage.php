@@ -630,8 +630,6 @@ if(isset($_SESSION['username'])) {
 				DisplayMSG('error','Error', 'กรุณากรอกข้อมูลให้ครบ.' ,'true');
 			}
 
-           
-
 			$item_id = $connect->real_escape_string($_POST['item_id']);
 			$price = $connect->real_escape_string($_POST['price']);
             // echo $item_id,'<br>';
@@ -684,6 +682,32 @@ if(isset($_SESSION['username'])) {
             VALUES (NULL, '".$image_name."', '".$_POST['height']."');");
 
 			DisplayMSG('success','Add Category Success !!!', 'เพิ่มเรียบร้อย !!!..' ,'true');
+	
+		}
+
+        if(isset($_GET['edit_slide'])) {
+            
+                if(empty($_POST['typecategory']))  {
+                    DisplayMSG('error','Error', 'กรุณากรอกเลือกประเภทหมวดหมู่.' ,'false');
+                }
+    
+                $idshop = $_POST['idshop'];
+                $old_info = $connect->query("SELECT * FROM `tbl_slide` WHERE id = '".$idshop ."'")->fetch_assoc();
+                // echo $_FILES['file']['name'] ;
+                if(empty($_FILES['file']['name'])){
+                    $image_now = $old_info['img'];
+                }else{
+                    unlink('assets/img/slide/'.$old_info['img']);
+                    $image_name = $_FILES['file']['name'];
+                    $imagepath ="assets/img/slide/".$image_name;
+                    $image_now = $image_name;
+                    move_uploaded_file($_FILES["file"]["tmp_name"], $imagepath);
+                }
+    
+                $query = $connect->query("UPDATE `tbl_slide` SET `img` = '".$image_now."', `name` = '".$_POST['name']."', `platform` = '".$_POST['platform']."' WHERE id = '".$idshop."';");
+    
+                DisplayMSG('success','Update Category Success !!!', 'แก้ไขเรียบร้อย !!!..' ,'true');
+        
 	
 		}
 

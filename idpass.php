@@ -246,7 +246,7 @@ if(isset($_SESSION['username'])) {
 
 	//เติมเงิน
 	if(isset($_GET['topupwallet'])) {
-		//echo $_POST['link_topup'] . $web_info['web_phone'];
+		echo $_POST['link_topup'] . $web_info['web_phone'];
 		if (empty($_POST['link_topup']))  {
 			DisplayMSG('error','Error', 'ไม่พบซองอั๋งเปานี้','false');
 		}
@@ -261,7 +261,7 @@ if(isset($_SESSION['username'])) {
 		if($responseKeys["success"]) {
 			
 			$link = $_POST['link_topup'];
-			$phone = "0647024408";//$web_info['web_phone']; //เบอร์รับอังเปา
+			$phone = $web_info['web_phone'];
 			class topup {
 				function giftcode($hash = null,$phone = null) {
 					if (is_null($hash) || is_null($phone)) return false;

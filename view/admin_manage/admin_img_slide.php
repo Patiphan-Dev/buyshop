@@ -33,28 +33,28 @@
          
         <table width="100%">
         <?php 
-        $result_category = $connect->query("SELECT * FROM tbl_slide");
-        $res_categorys = $result_category->fetch_all(MYSQLI_ASSOC);
+        $result_slide = $connect->query("SELECT * FROM tbl_slide");
+        $res_slides = $result_slide->fetch_all(MYSQLI_ASSOC);
         $i= 1;
-        foreach($res_categorys as $res_category) : 
+        foreach($res_slides as $res_slide) : 
         ?>
             <tr>
                 <td style="text-align:left"><?=$i++;?>.</td>
-                <td style="text-align:center"><img src="assets/img/slide/<?=$res_category['img'];?>" alt="<?=$res_category['img'];?>" height="50px" width="200px"></td>
-                <!-- <td style="text-align:left"><?=$res_category['img'];?></td> -->
+                <td style="text-align:center"><img src="assets/img/slide/<?=$res_slide['img'];?>" alt="<?=$res_slide['img'];?>" height="50px" width="200px"></td>
+                <!-- <td style="text-align:left"><?=$res_slide['img'];?></td> -->
                 <td style="text-align:left">
                 <?php
-                    if($res_category['id_img'] == 1){
-                        echo '<i class="fa-solid fa-toggle-on fa-xl pointer" style="color:#08B000;" onclick="on_showslide('.$res_category['id'].')"> </i> ภาพแรก';
+                    if($res_slide['id_img'] == 1){
+                        echo '<i class="fa-solid fa-toggle-on fa-xl pointer" style="color:#08B000;" onclick="on_showslide('.$res_slide['id'].')"> </i> ภาพแรก';
                     }else{
-                        echo '<i class="fa-solid fa-toggle-off fa-xl pointer" style="color:#dee81e;" onclick="on_showslide('.$res_category['id'].')"> </i> ปกติ';
+                        echo '<i class="fa-solid fa-toggle-off fa-xl pointer" style="color:#dee81e;" onclick="on_showslide('.$res_slide['id'].')"> </i> ปกติ';
                     }
                 ?>
 
                 </td>
                 <td style="text-align:right">
-                    <a href="?page=manage&admin=category_edit&id=<?=$res_category['id'];?>" class="hvr-icon-up btn btn-info btn-sm"><i class="hvr-icon fa-solid fa-pen-to-square"></i> แก้ไข</a>
-                    <a onclick="delete_slide(<?=$res_category['id'];?>)" class="hvr-icon-up btn btn-danger btn-sm"><i class="hvr-icon fa-solid fa-trash-can"></i> ลบ</a>
+                    <a href="?page=manage&admin=img_slide_edit&id=<?=$res_slide['id'];?>" class="hvr-icon-up btn btn-info btn-sm"><i class="hvr-icon fa-solid fa-pen-to-square"></i> แก้ไข</a>
+                    <a onclick="delete_slide(<?=$res_slide['id'];?>)" class="hvr-icon-up btn btn-danger btn-sm"><i class="hvr-icon fa-solid fa-trash-can"></i> ลบ</a>
                 </td>
             </tr>
         <?php endforeach; ?>

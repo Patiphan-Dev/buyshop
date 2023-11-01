@@ -119,7 +119,8 @@
             oauth: true,
             status: true, // check login status
             cookie: true, // enable cookies to allow the server to access the session
-            xfbml: true // parse XFBML
+            xfbml: true, // parse XFBML
+            version: 'v18.0'
         });
 
     };
@@ -136,10 +137,10 @@
                 fbName = userInfo.name;
                 fbEmail = userInfo.email;
                 fbPic = userInfo.picture.data.url;
-                // console.log(fbID);
-                // console.log(fbName);
-                // console.log(fbEmail);
-                // console.log(fbPic);
+                console.log(fbID);
+                console.log(fbName);
+                console.log(fbEmail);
+                console.log(fbPic);
                     $.post( "idpass.php?login_facebook",{
                         email: fbEmail,
                         username: fbName,

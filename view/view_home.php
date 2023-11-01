@@ -1,9 +1,8 @@
 <div class="col-12 mt-3 mb-3">
-   
-    <div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
+    <div id="carouselSlide" class="carousel slide" data-bs-ride="true">
         <div class="carousel-inner">
             <?php 
-            $result_category = $connect->query("SELECT * FROM tbl_slide order by id asc");
+            $result_category = $connect->query("SELECT * FROM tbl_slide");
             $res_categorys = $result_category->fetch_all(MYSQLI_ASSOC);
             $i= 1;
             foreach($res_categorys as $res_category) : 
@@ -14,11 +13,11 @@
             <?php endforeach; ?>
             
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselSlide" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleRide" data-bs-slide="next">
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselSlide" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
