@@ -30,74 +30,73 @@
 </div>
 
 <div class="col-md-8 col-sm-12 mt-4" data-aos="zoom-in">
-<!-- crad_tung text-white -->
-    <div class="card mb-3"> 
+    <!-- crad_tung text-white -->
+    <div class="card mb-3">
         <div class="card-header"><i class="fa-solid fa-wallet" style="color:#3D9B00;"></i> Topup History - ประวัติการเติมเงิน</div>
         <div class="card-body">
-        <?php
-            $result = $connect->query("SELECT * FROM tbl_topup WHERE username = '".$users_username."'; ");
+            <?php
+            $result = $connect->query("SELECT * FROM tbl_topup WHERE username = '" . $users_username . "'; ");
             $rewardshistorys = $result->fetch_all(MYSQLI_ASSOC);
-        ?>
-        <?php if($result->num_rows == 0) : ?>
-            <div class="alert alert-dismissible alert-warning">
-            <!-- <button type="button" class="btn-close" data-bs-dismiss="alert"></button> -->
-            <h4 class="alert-heading">Warning!</h4>
-            <p class="mb-0">ยังไม่มีประวัติการทำรายการ.</p>
-            </div>
-                            
-        <?php else: ?>                           
-            <div class="row">
-                <div class="col-md-12 col-sm-12 text-center mt-2">
-                    <div class="table-responsive">
-                        <table id="tbl_topuphistory" cellspacing="1" class="table table-striped table-bordered display text-white">
-                            <thead>
-                                <tr>
-                                    <th>#Order</th>
-                                    <th><i class="fa-solid fa-computer"></i> Pay</th>
-                                    <th><i class="fa-solid fa-credit-card"></i> Credit</th>
-                                    <th><i class="fa-solid fa-font-awesome"></i> Status</th>
-                                    <th><i class="fa-solid fa-clock"></i> Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php 
-                            foreach($rewardshistorys as $rewardshistory) :  ?>
-                                <tr>
-                                    <td><?= $rewardshistory['id']; ?></td>
-                                    <td><?= $rewardshistory['topupby']; ?></td>
-                                    <td><?= number_format($rewardshistory['point'],2); ?></td>
-                                    <td><span style="color:#1b4d0a;"><i class="fa-solid fa-check"></i> ผ่าน</span></td>
-                                    <td><?= th($rewardshistory['topuptime']); ?></td>
-                                    
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    
+            ?>
+            <?php if ($result->num_rows == 0) : ?>
+                <div class="alert alert-dismissible alert-warning">
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="alert"></button> -->
+                    <h4 class="alert-heading">Warning!</h4>
+                    <p class="mb-0">ยังไม่มีประวัติการทำรายการ.</p>
                 </div>
-            </div>
 
-        <?php endif; ?>  
+            <?php else : ?>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 text-center mt-2">
+                        <div class="table-responsive">
+                            <table id="tbl_topuphistory" cellspacing="1" class="table table-striped table-bordered display text-white">
+                                <thead>
+                                    <tr>
+                                        <th>#Order</th>
+                                        <th><i class="fa-solid fa-computer"></i> Pay</th>
+                                        <th><i class="fa-solid fa-credit-card"></i> Credit</th>
+                                        <th><i class="fa-solid fa-font-awesome"></i> Status</th>
+                                        <th><i class="fa-solid fa-clock"></i> Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach ($rewardshistorys as $rewardshistory) :  ?>
+                                        <tr>
+                                            <td><?= $rewardshistory['id']; ?></td>
+                                            <td><?= $rewardshistory['topupby']; ?></td>
+                                            <td><?= number_format($rewardshistory['point'], 2); ?></td>
+                                            <td><span style="color:#1b4d0a;"><i class="fa-solid fa-check"></i> ผ่าน</span></td>
+                                            <td><?= th($rewardshistory['topuptime']); ?></td>
+
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="howtotopup" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">วิธีเติมเงินด้วยอังเป่า</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <img src="assets/img/aungpao_truewallet.png" style="height: 100%;width: 100%; " alt="a" class="card-img-top img-proflie">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-info w-100" data-bs-dismiss="modal">Close</button>
-      </div>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">วิธีเติมเงินด้วยอังเป่า</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="assets/img/aungpao_truewallet.png" style="height: 100%;width: 100%; " alt="a" class="card-img-top img-proflie">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info w-100" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-

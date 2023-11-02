@@ -15,14 +15,14 @@
     foreach($res_categorys as $res_category) : 
     ?>
 
-<div class="col-md-3 col-sm-12 col-12 mb-4 hvr-float pointer" onclick="CradURL('./category/<?=$res_category['id']?>')">
+<div class="col-md-3 col-sm-6 col-12 mb-4 hvr-float pointer" onclick="CradURL('./category/<?=$res_category['id']?>')">
     <div class="card crad_tung card_new text-white" data-aos="fade-up">
         <div class="row p-2">
             <div class="col-6 text-center">
-                <img src="assets/img/game_icon/<?=$res_category['img']?>" alt="<?=$res_category['img']?>" width="70%" class="mb-3">
+                <img src="assets/img/game_icon/<?=$res_category['img']?>" alt="<?=$res_category['img']?>" style="max-width:100px" class="mb-2">
             </div>
-            <div class="col-6 mt-4">
-                <h2><?=$res_category['name']?></h2>
+            <div class="col-6 mt-3">
+                <h4><?=$res_category['name']?></h4>
                 <small><?=$res_category['platform']?></small>
             </div>
         </div>

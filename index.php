@@ -14,19 +14,15 @@ require('idpass.php');
     <link href="assets/css/tung.css" rel="stylesheet">
     <link href="assets/css/hover.css" rel="stylesheet">
     <link href="bg.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="assets/img/web_logo2.png">
+    <link rel="icon" type="image/x-icon" href="assets/img/web_logo2.png" />
     <link rel="stylesheet" href="assets/css/owl/owl.carousel.min.css">
     <link rel="stylesheet" href="assets/css/owl/owl.theme.default.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kanit:wght@200;300">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5.0.15/dark.min.css" rel="stylesheet"> -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.DataTables.net/1.13.4/css/jquery.DataTables.css" />
-    <!-- <link href="assets/css/tabledark.css" rel="stylesheet" type="text/css" />    -->
-
     <script src='https://www.google.com/recaptcha/api.js?hl=th'></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
 
     <style>
         body {
@@ -98,10 +94,9 @@ require('idpass.php');
 
         <nav id="top" class="navbar navbar-expand-lg navbar-dark py-4 sticky-lg-top" style="background-color:<?= $result_info_web['menu_color'] ?>;">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="<?= $result_info_web['web_img'] ?>" alt="CYBORG SHOP" style="max-width: 120px;">
-                    <!-- //<?= $result_info_web['web_name'] ?> -->
-                </a>
+                <!-- <a class="navbar-brand" href="#">
+            <?= $result_info_web['web_name'] ?></a> -->
+                <a href=""><img src="<?= $result_info_web['web_img'] ?>" style="height: 1	1.0rem;width: 5.9rem;border-radius: 2%;" alt="a" class="navbar-nav"></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -250,7 +245,7 @@ require('idpass.php');
                         <spen class="hvr-icon-up pointer" onclick="CradURL('<?= $result_info_web['web_youtube'] ?>')" target="_blank"><i class="fa-brands fa-youtube hvr-icon"></i> Youtube</spen>
                     </h5>
 
-                    <p>&copy; <?php echo date('Y'); ?> - <?= $result_info_web['web_name'] ?> <?= $result_info_web['web_version'] ?> Dev By P'tung | Discord mrtemm#1599 |
+                    <p>&copy; <?php echo date('Y'); ?> - <?= $result_info_web['web_name'] ?> <?= $result_info_web['web_version'] ?> Dev By TP Shop |
                         <a style="text-decoration: none;color:#fff;" href="page/policy">Privacy Policy</a>
                     </p>
 
@@ -273,7 +268,7 @@ require('idpass.php');
     }
     ?>
     <!-- <script src="assets/js/jquery-3.4.1.min.js"></script> -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.DataTables.net/1.13.2/js/jquery.DataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>
 
     <script src="assets/js/corgi.js"></script>
     <?php if (@$users_status == $admin_status) : ?>
@@ -338,7 +333,7 @@ require('idpass.php');
         $(document).ready(function() {
             <?php if (isset($_SESSION['username'])) : ?>
                 // $('.paginate_button.active').css("background-color","#f00");
-                $('#tbl_topuphistory').DataTable({
+                $('#tbl_topuphistory').dataTable({
                     "bFilter": false,
                     // "bInfo": false,
                     "order": [
@@ -369,7 +364,10 @@ require('idpass.php');
 
                     }
                 });
-                
+
+                $('#tbl_history_shop').DataTable({
+                    responsive: true
+                });
                 $('#tbl_history_shop2').DataTable({
                     responsive: true
                 });
@@ -386,8 +384,7 @@ require('idpass.php');
             <?php if (@$users_status == $admin_status) : ?>
 
                 $('#tbl_users').DataTable({
-                    "processing": true,
-                    "serverSide": true,
+                    responsive: true,
                     "ajax": 'manage.php?usersdata',
                     // "bFilter": false,
                     // "bInfo": false,
@@ -408,26 +405,6 @@ require('idpass.php');
                             }
                         },
                     ],
-                    "oLanguage": {
-                        "sLengthMenu": "แสดง _MENU_ เร็คคอร์ด ต่อหน้า",
-                        "sZeroRecords": "ไม่เจอข้อมูลที่ค้นหา",
-                        "sInfo": "แสดง _START_ ถึง _END_ ของ _TOTAL_ เร็คคอร์ด",
-                        "sInfoEmpty": "แสดง 0 ถึง 0 ของ 0 เร็คคอร์ด",
-                        "sInfoFiltered": "(จากเร็คคอร์ดทั้งหมด _MAX_ เร็คคอร์ด)",
-                        "sSearch": "ค้นหา :",
-                        "aaSorting": [
-                            [0, 'desc']
-                            // [0, 'desc']
-                        ],
-                        "oPaginate": {
-                            "sFirst": "หน้าแรก",
-                            "sPrevious": "ก่อนหน้า",
-                            "sNext": "ถัดไป",
-                            "sLast": "หน้าสุดท้าย"
-                        },
-
-
-                    }
                 });
 
             <?php endif; ?>

@@ -81,7 +81,7 @@
         center: {
             rotate: true,
             image: {
-                url: "assets/img/logo_shop.png"
+                url: "assets/img/web_logo2.png"
             }
         },
         marker: {

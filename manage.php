@@ -153,74 +153,83 @@ if(isset($_SESSION['username'])) {
 	
 		}
 
-        //edit shop
-        if(isset($_GET['edit_shop_id'])) {
+         //edit shop
+         if (isset($_GET['edit_shop_id'])) {
 
-			if(empty($_POST['shopname']))  {
-				DisplayMSG('error','Error', 'กรุณากรอกเชื่อสินค้า.' ,'false');
-			}
-			if(empty($_POST['name']))  {
-				DisplayMSG('error','Error', 'กรุณากรอกข้อมูลสินค้า.' ,'false');
-			}
-			if(empty($_POST['shoptype']))  {
-				DisplayMSG('error','Error', 'กรุณากรอกประเภทสินค้า.' ,'false');
-			}
-            if(empty($_POST['point']))  {
-				DisplayMSG('error','Error', 'กรุณากระบุราคาปกติสินค้า.' ,'false');
-			}
-            if(empty($_POST['pointv']))  {
-				DisplayMSG('error','Error', 'กรุณากระบุราคาพิเศษสินค้า.' ,'false');
-			}
-            
-            $idedit = $connect->real_escape_string(@$_POST['shopid']);
-            $image_name_array = array();
-            // if(empty($image_name_array)){
-            // }
-
-            for($i=0; $i < count($_FILES["file"]["name"]); $i++)  
-            {  
-                $image_name = $_FILES['file']['name'][$i];
-                $imagepath ="assets/img/shop/".$image_name;
-                // move_uploaded_file($_FILES["file"]["tmp_name"], $imagepath); 
-                move_uploaded_file($_FILES["file"]["tmp_name"][$i], $imagepath); 
-                $image_name_array[] = $imagepath;
-                // array_push($image_name_array, "$folder".$_FILES["file"]["name"][$i]);
+            if (empty($_POST['shopname'])) {
+                DisplayMSG('error', 'Error', 'กรุณากรอกเชื่อสินค้า.', 'false');
+            }
+            if (empty($_POST['name'])) {
+                DisplayMSG('error', 'Error', 'กรุณากรอกข้อมูลสินค้า.', 'false');
+            }
+            if (empty($_POST['shoptype'])) {
+                DisplayMSG('error', 'Error', 'กรุณากรอกประเภทสินค้า.', 'false');
+            }
+            if (empty($_POST['point'])) {
+                DisplayMSG('error', 'Error', 'กรุณากระบุราคาปกติสินค้า.', 'false');
             }
 
-            $result_shop_image = $connect->query("SELECT * FROM tbl_shop_id WHERE id = '".$idedit."'")->fetch_assoc();
+            // if (!empty($_FILES["file"]["name"])) {
+            $idedit = $connect->real_escape_string(@$_POST['shopid']);
+            $image_name_array = array();
 
-            $result_image = explode(',', trim($_POST['img_info']));
-            foreach($result_image as $i =>$result_shops){
-                if(!empty($result_shops)){
-                    $image_name_array[] = $result_shops;
+            if (!empty($_FILES["file"]["name"]) && empty($_POST['img_info'])) {
+                for ($i = 0; $i < count($_FILES["file"]["name"]); $i++) {
+                    $image_name = $_FILES['file']['name'][$i];
+                    $imagepath = "assets/img/shop/" . $image_name;
+                    move_uploaded_file($_FILES["file"]["tmp_name"][$i], $imagepath);
+                    $image_name_array[] = $imagepath;
+                }
+            } else if (empty($_FILES["file"]["name"]) && !empty($_POST['img_info'])) {
+                $result_image = explode(',', trim($_POST['img_info']));
+                foreach ($result_image as $i => $result_shops) {
+                    if (!empty($result_shops)) {
+                        $image_name_array[] = $result_shops;
+                    }
+                }
+            } else if (empty($_FILES["file"]["name"]) && empty($_POST['img_info'])) {
+                $image_name_array[] = '';
+            } else {
+                $result_image = explode(',', trim($_POST['img_info']));
+                foreach ($result_image as $i => $result_shops) {
+                    if (!empty($result_shops)) {
+                        $image_name_array[] = $result_shops;
+                    }
+                }
+                for ($i = 0; $i < count($_FILES["file"]["name"]); $i++) {
+                    $image_name = $_FILES['file']['name'][$i];
+                    $imagepath = "assets/img/shop/" . $image_name;
+                    move_uploaded_file($_FILES["file"]["tmp_name"][$i], $imagepath);
+                    $image_name_array[] = $imagepath;
                 }
             }
 
-            if($_POST['shoptype'] == '1'){
+            $result_shop_image = $connect->query("SELECT * FROM tbl_shop_id WHERE id = '" . $idedit . "'")->fetch_assoc();
+
+
+
+            if ($_POST['shoptype'] == '1') {
                 $shoptype = 'idgame';
-            }else{
+            } else {
                 $shoptype = 'account';
             }
 
             // htmlspecialchars($_POST['name'])implode(',', $image_name_array)
             $id_secret_info = openssl_encrypt($_POST['secret_info'], $ciphering, $encryption_key, $options, $encryption_iv);
-            
+
             $query = $connect->query("UPDATE `tbl_shop_id` SET 
-            `gameid` = '".$_POST['category']."', 
-            `shoptype` = '".$shoptype."', 
-            `name` = '".$_POST['shopname']."', 
-            `img` = '".implode(',', $image_name_array)."', 
-            `point` = '".$_POST['point']."', 
-            `pointv` = '".$_POST['pointv']."', 
-            `timeadd` = '".time()."', 
-            `secret_info` = '".$id_secret_info."', 
-            `publish_info` = '".$_POST['name']."' WHERE id = '".$idedit."';");
+                `gameid` = '" . $_POST['category'] . "', 
+                `shoptype` = '" . $shoptype . "', 
+                `name` = '" . $_POST['shopname'] . "', 
+                `img` = '" . implode(',', $image_name_array) . "', 
+                `point` = '" . $_POST['point'] . "', 
+                `pointv` = '" . $_POST['pointv'] . "', 
+                `timeadd` = '" . time() . "', 
+                `secret_info` = '" . $id_secret_info . "', 
+                `publish_info` = '" . $_POST['name'] . "' WHERE id = '" . $idedit . "';");
 
-            DisplayMSG('success','Update Shop Success !!!', 'แก้เรียบร้อย !!!..' ,'true');
-
-            //-------
-	
-		}
+            DisplayMSG('success', 'Update Shop Success !!!', 'แก้เรียบร้อย !!!..', 'true');
+        }
 
         //update users
         if (isset($_GET['updateusers'])) {
