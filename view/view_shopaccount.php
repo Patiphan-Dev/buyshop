@@ -21,8 +21,8 @@ foreach ($res_categorys as $res_category) :
                 <div class="col-6 text-center">
                     <img src="assets/img/game_icon/<?= $res_category['img'] ?>" alt="<?= $res_category['img'] ?>" width="70%" class="mb-3">
                 </div>
-                <div class="col-6 mt-4">
-                    <h2><?= $res_category['name'] ?></h2>
+                <div class="col-6 mt-3">
+                    <h4><?= $res_category['name'] ?></h4>
                     <small><?= $res_category['platform'] ?></small>
                 </div>
             </div>

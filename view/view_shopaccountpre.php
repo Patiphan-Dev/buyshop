@@ -26,8 +26,26 @@ if ($result_load_packz->num_rows == 0) : ?>
 
           <h5><?= $shop_fetch['name'] ?></h5>
           <small><i class="fa-brands fa-creative-commons-share"></i> ประเภทสินค้า <?= $shop_fetch['id'] ?></small>
-          <small><i class="fa-regular fa-circle-user"></i> คงเหลือ <?= $shop_fetch['stock'] ?> ชิ้น</small>
-          <small><i class="fa-regular fa-clock"></i> สถานะ <?= $shop_fetch['status'] ?></small>
+          <small>
+            <i class="fa-regular fa-circle-user"></i> คงเหลือ
+            <?php
+            if ($shop_fetch['stock'] > 5) : ?>
+              <span style="color: green;"><?= $shop_fetch['stock'] ?></span>
+            <?php elseif ($shop_fetch['stock'] > 0) : ?>
+              <span style="color: yellow;"><?= $shop_fetch['stock'] ?></span>
+            <?php else : ?>
+              <span style="color: red;"><?= $shop_fetch['stock'] ?></span>
+            <?php endif ?>
+            ชิ้น
+          </small>
+
+          <?php if ($shop_fetch['status'] == 'พร้อมส่ง') : ?>
+                <small><i class="fa-regular fa-clock"></i> สถานะ <span style="color: green;"><?= $shop_fetch['status'] ?></span> </small>
+              <?php else : ?>
+                <small><i class="fa-regular fa-clock"></i> สถานะ <span style="color: red;"><?= $shop_fetch['status'] ?></span> </small>
+              <?php endif ?>
+
+
         </div>
         <div class="p-2">
           <?php if (@$users_status == $vip_status) : ?>
@@ -38,7 +56,12 @@ if ($result_load_packz->num_rows == 0) : ?>
 
           <button class="btn btn-outline-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#ShopModal<?= $shop_fetch['id'] ?>">ข้อมูลเพิ่มเติม</button>
           <?php if (isset($_SESSION['username'])) : ?>
-            <button class="btn btn-primary w-100 mb-2" onclick="buypremium(<?= $shop_fetch['id'] ?>)">สั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
+            <?php if ($shop_fetch['stock'] > 0) : ?>
+              <button class="btn btn-primary w-100 mb-2" onclick="buypremium(<?= $shop_fetch['id'] ?>)">สั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
+            <?php else : ?>
+              <button class="btn btn-danger w-100 mb-2">สินค้าหมด (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
+            <?php endif ?>
+
           <?php else : ?>
             <button class="btn btn-primary w-100 mb-2" disabled onclick="buypremium(<?= $shop_fetch['id'] ?>)">เข้าสู่ระบบเพื่อนสั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
           <?php endif ?>
@@ -62,15 +85,33 @@ if ($result_load_packz->num_rows == 0) : ?>
             <div class="text-center">
               <center><img src="<?= $shop_fetch['img'] ?>" class="p-4" style="width:11.1rem;"></center>
               <h5><?= $shop_fetch['name'] ?></h5>
-              <small><i class="fa-brands fa-creative-commons-share"></i> ประเภทสินค้า <?= $shop_fetch['id'] ?></small>
-              <small><i class="fa-regular fa-circle-user"></i> คงเหลือ <?= $shop_fetch['stock'] ?> ชิ้น</small>
-              <small><i class="fa-regular fa-clock"></i> สถานะ <?= $shop_fetch['status'] ?></small>
+              <small><i class="fa-brands fa-creative-commons-share"></i> ประเภทสินค้า <?= $shop_fetch['id'] ?> </small>
+
+              <small><i class="fa-regular fa-circle-user"></i> คงเหลือ
+                <?php
+                if ($shop_fetch['stock'] > 5) : ?>
+                  <span style="color: green;"><?= $shop_fetch['stock'] ?></span>
+                <?php elseif ($shop_fetch['stock'] > 0) : ?>
+                  <span style="color: yellow;"><?= $shop_fetch['stock'] ?></span>
+                <?php else : ?>
+                  <span style="color: red;"><?= $shop_fetch['stock'] ?></span>
+                <?php endif ?>
+                ชิ้น </small>
+              <?php if ($shop_fetch['status'] == 'พร้อมส่ง') : ?>
+                <small><i class="fa-regular fa-clock"></i> สถานะ <span style="color: green;"><?= $shop_fetch['status'] ?></span> </small>
+              <?php else : ?>
+                <small><i class="fa-regular fa-clock"></i> สถานะ <span style="color: red;"><?= $shop_fetch['status'] ?></span> </small>
+              <?php endif ?>
             </div>
 
           </div>
           <div class="modal-footer">
             <?php if (isset($_SESSION['username'])) : ?>
-              <button class="btn btn-primary w-40 mb-2" onclick="buypremium(<?= $shop_fetch['id'] ?>)">สั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
+              <?php if ($shop_fetch['stock'] > 0) : ?>
+                <button class="btn btn-primary w-40 mb-2" onclick="buypremium(<?= $shop_fetch['id'] ?>)">สั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
+              <?php else : ?>
+                <button class="btn btn-danger w-40 mb-2">สินค้าหมด</button>
+              <?php endif ?>
             <?php else : ?>
               <button class="btn btn-primary w-40 mb-2" disabled onclick="buypremium(<?= $shop_fetch['id'] ?>)">เข้าสู่ระบบเพื่อนสั่งซื้อ (<?= number_format($shop_fetch['price_web'], 2) ?> เครดิค)</button>
             <?php endif ?>
