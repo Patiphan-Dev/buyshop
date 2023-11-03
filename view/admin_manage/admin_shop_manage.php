@@ -1,6 +1,3 @@
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
-
 <div class="col-md-12 col-sm-12 mt-2" data-aos="zoom-in">
     <div class="card mb-3">
         <div class="card-header"><i class="fa-solid fa-caret-right" style="color:#F186A9;"></i> Manage Shop - จัดการสินค้า</div>
@@ -90,8 +87,3 @@
         </div>
     </div>
 </div>
-<script>
-    $('#tbl_history_shop').DataTable({
-        responsive: true
-    });
-</script>
