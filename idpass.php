@@ -9,14 +9,14 @@ $count_shop = $connect->query('SELECT * FROM tbl_shop_id ; ')->num_rows;
 $count_shop_sell = $connect->query('SELECT * FROM tbl_shop_id WHERE `owner` != "" ; ')->num_rows;
 
 
-if(isset($_GET['login'])) {
-	if(empty($_POST['email']) || empty($_POST['password']))  {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'กรุณาอย่าเว้นช่องว่าง ✍️.','false');
+if (isset($_GET['login'])) {
+	if (empty($_POST['email']) || empty($_POST['password'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'กรุณาอย่าเว้นช่องว่าง ✍️.', 'false');
 	}
-	if(empty($_POST['recaptcha']) )  {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'กรุณายืนยันตัวตน.','false');
+	if (empty($_POST['recaptcha'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'กรุณายืนยันตัวตน.', 'false');
 	}
-    // if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['username'])) {
+	// if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['username'])) {
 	// 	DisplayMSG('error','โอ้ะ...โอ!!', 'ชื่อผู้ใช้ไม่ถูกต้อง ต้องเป็น A-Z 0-9 เท่านั้น !!.','false');
 	// }
 	// if(mb_strlen($_POST['username']) <= 4) {
@@ -25,108 +25,122 @@ if(isset($_GET['login'])) {
 	// if(mb_strlen($_POST['username']) >= 25) {
 	// 	DisplayMSG('error','โอ้ะ...โอ!!', 'ชื่อผู้ใช้สูงสุด 24 ตัวขึ้นไป !!','false');
 	// }
-	if(strlen($_POST['password']) <= 4) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'รหัสผ่านอย่างน้อย 5 ตัวขึ้นไป !!','false');
+	if (strlen($_POST['password']) <= 4) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'รหัสผ่านอย่างน้อย 5 ตัวขึ้นไป !!', 'false');
 	}
-	if(mb_strlen($_POST['password']) >= 25) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'รหัสผ่านสูงสุด 24 ตัว !!','false');
-	}
-
-	$secretKey = SECRET_KEY;
-	$captcha = $_POST['recaptcha'];
-    $ip = $_SERVER['REMOTE_ADDR'];
-        // post request to server
-    $url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) .  '&response=' . urlencode($captcha);
-    $response = file_get_contents($url);
-    $responseKeys = json_decode($response,true);
-        // should return JSON with success as true
-    if($responseKeys["success"]) {
-
-		// $username = $connect->real_escape_string($_POST['username']);
-		$email = $connect->real_escape_string($_POST['email']);
-		$password = md5($_POST['password'].SECRET_WEB);
-		$query = $connect->query('SELECT * FROM tbl_users WHERE email = "'.$email.'" AND password = "'.$password.'" ');
-		$username_check = $query->num_rows;
-		$account = $query->fetch_assoc();
-		if($username_check == 0){
-			DisplayMSG('error','Error', 'ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง !!','false');
-		}
-		if($account['status'] == "0"){
-			DisplayMSG('error','Banned !!!', 'บัญชีของคุณถูกแบนถาวร !!!','false');
-		}else {
-			$_SESSION['username'] = $email;
-			$connect->query("UPDATE tbl_users SET ip = '".$ip."' WHERE email = '$email' ;");
-			DisplayMSG('success','Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!','true');
-		}
-	}else {
-        DisplayMSG('error','Are you a rebot!!', 'กรุณายืนยันตัวตน.','true');
-    }
-}
-
-if(isset($_GET['register'])) {
-	if(empty($_POST['username']) || empty($_POST['password']))  {
-	   DisplayMSG('error','โอ้ะ...โอ!! ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.','false');
-    }
-    if(empty($_POST['email']))  {
-        DisplayMSG('error','โอ้ะ...โอ!! ❗️❗️', 'กรุณากรอกอีเมลที่ติดต่อได้จริง 📵.','false');
-    }
-	if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['username'])) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'ชื่อผู้ใช้ไม่ถูกต้อง ต้องเป็น A-Z 0-9 เท่านั้น !!.','false');
-	}
-	if(mb_strlen($_POST['username']) <= 4) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'ชื่อผู้ใช้อย่างน้อย 5 ตัวขึ้นไป !!','false');
-	}
-	if(mb_strlen($_POST['username']) >= 25) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'ชื่อผู้ใช้สูงสุด 24 ตัวขึ้นไป !!','false');
-	}
-	if(strlen($_POST['password']) <= 4) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'รหัสผ่านอย่างน้อย 5 ตัวขึ้นไป !!','false');
-	}
-	if(mb_strlen($_POST['password']) >= 25) {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'รหัสผ่านสูงสุด 24 ตัว !!','false');
-	}
-	if($_POST['password'] != $_POST['repassword'])  {
-	  DisplayMSG('error','โอ้ะ...โอ!!', 'รหัสผ่าน ไม่ตรงกัน !!','false');
-	}
-	if(empty($_POST['recaptcha']) )  {
-		DisplayMSG('error','โอ้ะ...โอ!!', 'กรุณายืนยันตัวตน.','false');
+	if (mb_strlen($_POST['password']) >= 25) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'รหัสผ่านสูงสุด 24 ตัว !!', 'false');
 	}
 
 	$secretKey = SECRET_KEY;
 	$captcha = $_POST['recaptcha'];
 	$ip = $_SERVER['REMOTE_ADDR'];
-        // post request to server
-    $url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) .  '&response=' . urlencode($captcha);
-    $response = file_get_contents($url);
-    $responseKeys = json_decode($response,true);
-        // should return JSON with success as true
-    if($responseKeys["success"]) {
-			$username = $connect->real_escape_string($_POST['username']);
-			$email = $connect->real_escape_string($_POST['email']);
-			$password = md5($_POST['password'].SECRET_WEB);
-			$query = $connect->query('SELECT * FROM tbl_users WHERE email = "'.$email.'" ');
-			$username_check = $query->num_rows;
-		if($username_check >= 1){
-			DisplayMSG('error','Error', ' มีผู้ใช้งานไปแล้ว !!!','false');
-		}else {
-			$query = $connect->query("INSERT INTO `tbl_users` (`id`, `img`, `username`, `password`, `email`, `point`, `ip`, `status`) VALUES (NULL, 'assets/img/anya.jpg', '".$username."', '".$password."', '".$email."', '0', '".$ip."', '1');");
+	// post request to server
+	$url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) . '&response=' . urlencode($captcha);
+	$response = file_get_contents($url);
+	$responseKeys = json_decode($response, true);
+	// should return JSON with success as true
+	if ($responseKeys["success"]) {
 
-			$_SESSION['username'] = $email;
-            
-			DisplayMSG('success','Register Success !!!', 'สมัครสมาชิกสำเร็จ !!!..','true');
+		// Use prepared statement for login security
+		$email = $_POST['email'];
+		$password = md5($_POST['password'] . SECRET_WEB);
+		$stmt = $connect->prepare('SELECT * FROM tbl_users WHERE email = ? AND password = ?');
+		$stmt->bind_param('ss', $email, $password);
+		$stmt->execute();
+		$query = $stmt->get_result();
+		$username_check = $query->num_rows;
+		$account = $query->fetch_assoc();
+		if ($username_check == 0) {
+			DisplayMSG('error', 'Error', 'ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง !!', 'false');
 		}
-	}else {
-        DisplayMSG('error','Are you a rebot!!', 'กรุณายืนยันตัวตน.','true');
-    }
+		if ($account['status'] == "0") {
+			DisplayMSG('error', 'Banned !!!', 'บัญชีของคุณถูกแบนถาวร !!!', 'false');
+		} else {
+			$_SESSION['username'] = $email;
+			$stmt2 = $connect->prepare("UPDATE tbl_users SET ip = ? WHERE email = ?");
+			$stmt2->bind_param('ss', $ip, $email);
+			$stmt2->execute();
+			DisplayMSG('success', 'Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!', 'true');
+		}
+	} else {
+		DisplayMSG('error', 'Are you a rebot!!', 'กรุณายืนยันตัวตน.', 'true');
+	}
 }
 
-if(isset($_GET['logout'])) {
+if (isset($_GET['register'])) {
+	if (empty($_POST['username']) || empty($_POST['password'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!! ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.', 'false');
+	}
+	if (empty($_POST['email'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!! ❗️❗️', 'กรุณากรอกอีเมลที่ติดต่อได้จริง 📵.', 'false');
+	}
+	if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['username'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'ชื่อผู้ใช้ไม่ถูกต้อง ต้องเป็น A-Z 0-9 เท่านั้น !!.', 'false');
+	}
+	if (mb_strlen($_POST['username']) <= 4) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'ชื่อผู้ใช้อย่างน้อย 5 ตัวขึ้นไป !!', 'false');
+	}
+	if (mb_strlen($_POST['username']) >= 25) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'ชื่อผู้ใช้สูงสุด 24 ตัวขึ้นไป !!', 'false');
+	}
+	if (strlen($_POST['password']) <= 4) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'รหัสผ่านอย่างน้อย 5 ตัวขึ้นไป !!', 'false');
+	}
+	if (mb_strlen($_POST['password']) >= 25) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'รหัสผ่านสูงสุด 24 ตัว !!', 'false');
+	}
+	if ($_POST['password'] != $_POST['repassword']) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'รหัสผ่าน ไม่ตรงกัน !!', 'false');
+	}
+	if (empty($_POST['recaptcha'])) {
+		DisplayMSG('error', 'โอ้ะ...โอ!!', 'กรุณายืนยันตัวตน.', 'false');
+	}
+
+	$secretKey = SECRET_KEY;
+	$captcha = $_POST['recaptcha'];
+	$ip = $_SERVER['REMOTE_ADDR'];
+	// post request to server
+	$url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) . '&response=' . urlencode($captcha);
+	$response = file_get_contents($url);
+	$responseKeys = json_decode($response, true);
+	// should return JSON with success as true
+	if ($responseKeys["success"]) {
+		// Use prepared statement for register security
+		$username = $_POST['username'];
+		$email = $_POST['email'];
+		$password = md5($_POST['password'] . SECRET_WEB);
+		$stmt = $connect->prepare('SELECT * FROM tbl_users WHERE email = ?');
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$query = $stmt->get_result();
+		$username_check = $query->num_rows;
+		if ($username_check >= 1) {
+			DisplayMSG('error', 'Error', ' มีผู้ใช้งานไปแล้ว !!!', 'false');
+		} else {
+			$img = 'assets/img/anya.jpg';
+			$point = 0;
+			$status = 1;
+			$stmt2 = $connect->prepare("INSERT INTO `tbl_users` (`id`, `img`, `username`, `password`, `email`, `point`, `ip`, `status`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt2->bind_param('ssssssi', $img, $username, $password, $email, $point, $ip, $status);
+			$stmt2->execute();
+
+			$_SESSION['username'] = $email;
+
+			DisplayMSG('success', 'Register Success !!!', 'สมัครสมาชิกสำเร็จ !!!..', 'true');
+		}
+	} else {
+		DisplayMSG('error', 'Are you a rebot!!', 'กรุณายืนยันตัวตน.', 'true');
+	}
+}
+
+if (isset($_GET['logout'])) {
 	session_destroy();
-	DisplayMSG('success','Logout Success!!','ออกจากระบบเรียบร้อยแล้ว','true');
+	DisplayMSG('success', 'Logout Success!!', 'ออกจากระบบเรียบร้อยแล้ว', 'true');
 	// DisplayMSG('success','Logout Success!!','ออกจากระบบเรียบร้อยแล้ว','true','./home');
 }
 
-if(isset($_GET['login_google'])) {
+if (isset($_GET['login_google'])) {
 	$token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
 	$client->setAccessToken($token['access_token']);
 
@@ -149,125 +163,153 @@ if(isset($_GET['login_google'])) {
 	$img = $userinfo['picture'];
 	$email = $userinfo['email'];
 	$password = $userinfo['token'];
-	$query = $connect->query('SELECT * FROM tbl_users WHERE email = "'.$email.'"; ');
+
+	$stmt = $connect->prepare('SELECT * FROM tbl_users WHERE email = ?');
+	$stmt->bind_param('s', $email);
+	$stmt->execute();
+	$query = $stmt->get_result();
 	$email_check = $query->num_rows;
 	$account = $query->fetch_assoc();
-	if($email_check == 0){
-		// DisplayMSG('error','Error', 'ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง !!','false');
-		$query = $connect->query("INSERT INTO `tbl_users` (`id`, `img`, `username`, `password`, `email`, `point`, `ip`, `status`) 
-		VALUES (NULL, '".$img."', '".$username."', '".$password."', '".$email."', '0', '".$ip."', '1');");
+
+	if ($email_check == 0) {
+		$point = 0;
+		$status = 1;
+		$stmt_insert = $connect->prepare("INSERT INTO `tbl_users` (`img`, `username`, `password`, `email`, `point`, `ip`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$stmt_insert->bind_param('ssssdsi', $img, $username, $password, $email, $point, $ip, $status);
+		$stmt_insert->execute();
 		$_SESSION['username'] = $email;
 		header("Location: index.php");
-	}
-	if($account['status'] == "0"){
+	} elseif (isset($account['status']) && $account['status'] == "0") {
 		header("Location: index.php");
 		// DisplayMSG('error','Banned !!!', 'บัญชีของคุณถูกแบนถาวร !!!','false');
-	}else {
+	} else {
 		$_SESSION['username'] = $email;
-		$connect->query("UPDATE tbl_users SET ip = '".$ip."' WHERE username = '$email' ;");
+		$stmt_update = $connect->prepare("UPDATE tbl_users SET ip = ? WHERE username = ?");
+		$stmt_update->bind_param('ss', $ip, $email);
+		$stmt_update->execute();
 		header("Location: index.php");
 		// DisplayMSG('success','Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!','true');
 	}
 }
 
-if(isset($_GET['login_facebook'])) {
+if (isset($_GET['login_facebook'])) {
 
 	$ip = $_SERVER['REMOTE_ADDR'];
 	$img = $_POST['img'];
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 	$email = $_POST['email'];
-	if(empty($email)){
-		$email = $password."@fb.com";
+	if (empty($email)) {
+		$email = $password . "@fb.com";
 	}
-	
-	$query = $connect->query('SELECT * FROM tbl_users WHERE email = "'.$email.'"; ');
+
+	$stmt = $connect->prepare('SELECT * FROM tbl_users WHERE email = ?');
+	$stmt->bind_param('s', $email);
+	$stmt->execute();
+	$query = $stmt->get_result();
 	$email_check = $query->num_rows;
 	$account = $query->fetch_assoc();
-	if($email_check == 0){
-		$query = $connect->query("INSERT INTO `tbl_users` (`id`, `img`, `username`, `password`, `email`, `point`, `ip`, `status`) 
-		VALUES (NULL, '".$img."', '".$username."', '".$password."', '".$email."', '0', '".$ip."', '1');");
+
+	if ($email_check == 0) {
+		$point = 0;
+		$status = 1;
+		$stmt_insert = $connect->prepare("INSERT INTO `tbl_users` (`img`, `username`, `password`, `email`, `point`, `ip`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+		$stmt_insert->bind_param('ssssdsi', $img, $username, $password, $email, $point, $ip, $status);
+		$stmt_insert->execute();
 		$_SESSION['username'] = $email;
 		// header("Location: index.php");
-		DisplayMSG('success','Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!','true');
-	}
-	if($account['status'] == "0"){
+		DisplayMSG('success', 'Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!', 'true');
+	} elseif (isset($account['status']) && $account['status'] == "0") {
 		// header("Location: index.php");
-		DisplayMSG('error','Banned !!!', 'บัญชีของคุณถูกแบนถาวร !!!','false');
-	}else {
+		DisplayMSG('error', 'Banned !!!', 'บัญชีของคุณถูกแบนถาวร !!!', 'false');
+	} else {
 		$_SESSION['username'] = $email;
-		$connect->query("UPDATE tbl_users SET ip = '".$ip."' WHERE email = '$email' ;");
+		$stmt_update = $connect->prepare("UPDATE tbl_users SET ip = ? WHERE email = ?");
+		$stmt_update->bind_param('ss', $ip, $email);
+		$stmt_update->execute();
 		// header("Location: index.php");
-		DisplayMSG('success','Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!','true');
+		DisplayMSG('success', 'Login Success !!!', 'เข้าสู่ระบบสำเร็จ !!', 'true');
 	}
 
 }
 
 //status login
-if(isset($_SESSION['username'])) {
-    //ดึงข้อมูล user
-    $users = $connect->query('SELECT * FROM `tbl_users` WHERE `email` = "'.$_SESSION['username'].'" ')->fetch_assoc();
-    $users_status = $users['status'];
-    $users_username = $users['username'];
-    $users_point = $users['point'];
-    $users_profile = $users['img'];
-    $users_email = substr($users['email'], 0, 3).'****'.substr($users['email'], strpos($users['email'], "@"));
+if (isset($_SESSION['username'])) {
+	//ดึงข้อมูล user
+	$stmt = $connect->prepare('SELECT * FROM `tbl_users` WHERE `email` = ?');
+	$stmt->bind_param('s', $_SESSION['username']);
+	$stmt->execute();
+	$users = $stmt->get_result()->fetch_assoc();
+	$users_status = $users['status'];
+	$users_username = $users['username'];
+	$users_point = $users['point'];
+	$users_profile = $users['img'];
+	$users_email = substr($users['email'], 0, 3) . '****' . substr($users['email'], strpos($users['email'], "@"));
 
-	if($users_status == 0){//ban
+	if ($users_status == 0) {//ban
 		session_destroy();
 		header("Refresh:0");
 	}
 
-    if(isset($_GET['reprofile'])) {
-        if(empty($_POST['urlimg']))  {
-            DisplayMSG('error','Warning ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.','false');
-        }
+	if (isset($_GET['reprofile'])) {
+		if (empty($_POST['urlimg'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.', 'false');
+		}
 		// if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['urlimg'])) {
 		// 	DisplayMSG('error','Error', 'มีอักษรต้องห้าม.','false');
 		// }
-        $urlimg = $connect->real_escape_string($_POST['urlimg']);
-        $users = $connect->query("UPDATE `tbl_users` SET `img` = '".htmlspecialchars($urlimg)."' WHERE username = '".$users_username."';");
-        
-        DisplayMSG('success','Save Profile Success!!','บันทึกข้อมูลเรียบร้อย!!','true');
-    }
+		$urlimg = $connect->real_escape_string($_POST['urlimg']);
+		$clean_img = htmlspecialchars($urlimg);
+		$stmt = $connect->prepare("UPDATE `tbl_users` SET `img` = ? WHERE username = ?");
+		$stmt->bind_param('ss', $clean_img, $users_username);
+		$stmt->execute();
 
-    if(isset($_GET['repassword'])) {
-        if(empty($_POST['urlimg']))  {
-            DisplayMSG('error','Warning ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.','false');
-        }
-		if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['urlimg'])) {
-			DisplayMSG('error','Error', 'มีอักษรต้องห้าม.','false');
+		DisplayMSG('success', 'Save Profile Success!!', 'บันทึกข้อมูลเรียบร้อย!!', 'true');
+	}
+
+	if (isset($_GET['repassword'])) {
+		if (empty($_POST['urlimg'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'กรุณาอย่าเว้นช่องว่าง ✍️.', 'false');
 		}
-        $urlimg = $connect->real_escape_string($_POST['urlimg']);
-        $users = $connect->query("UPDATE `tbl_users` SET `img` = '".htmlspecialchars($urlimg)."' WHERE username = '".$users_username."';");
-        
-        DisplayMSG('success','Save Profile Success!!','บันทึกข้อมูลเรียบร้อย!!','true');
-    }
+		if (!preg_match('/^[a-zA-Z0-9\_]*$/', $_POST['urlimg'])) {
+			DisplayMSG('error', 'Error', 'มีอักษรต้องห้าม.', 'false');
+		}
+		$urlimg = $connect->real_escape_string($_POST['urlimg']);
+		$clean_img = htmlspecialchars($urlimg);
+		$stmt = $connect->prepare("UPDATE `tbl_users` SET `img` = ? WHERE username = ?");
+		$stmt->bind_param('ss', $clean_img, $users_username);
+		$stmt->execute();
+
+		DisplayMSG('success', 'Save Profile Success!!', 'บันทึกข้อมูลเรียบร้อย!!', 'true');
+	}
 
 	//เติมเงิน
-	if(isset($_GET['topupwallet'])) {
+	if (isset($_GET['topupwallet'])) {
 		echo $_POST['link_topup'] . $web_info['web_phone'];
-		if (empty($_POST['link_topup']))  {
-			DisplayMSG('error','Error', 'ไม่พบซองอั๋งเปานี้','false');
+		if (empty($_POST['link_topup'])) {
+			DisplayMSG('error', 'Error', 'ไม่พบซองอั๋งเปานี้', 'false');
 		}
 		$secretKey = SECRET_KEY;
 		$captcha = $_POST['recaptcha'];
 		$ip = $_SERVER['REMOTE_ADDR'];
 		// post request to server
-		$url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) .  '&response=' . urlencode($captcha);
+		$url = 'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($secretKey) . '&response=' . urlencode($captcha);
 		$response = file_get_contents($url);
-		$responseKeys = json_decode($response,true);
+		$responseKeys = json_decode($response, true);
 		// should return JSON with success as true
-		if($responseKeys["success"]) {
-			
+		if ($responseKeys["success"]) {
+
 			$link = $_POST['link_topup'];
 			$phone = $web_info['web_phone'];
-			class topup {
-				function giftcode($hash = null,$phone = null) {
-					if (is_null($hash) || is_null($phone)) return false;
+			class topup
+			{
+				function giftcode($hash = null, $phone = null)
+				{
+					if (is_null($hash) || is_null($phone))
+						return false;
 					$ch = curl_init();
-					@$hash = explode('?v=',$hash)[1];
-					$headers  = [
+					@$hash = explode('?v=', $hash)[1];
+					$headers = [
 						'Content-Type: application/json',
 						'Accept: application/json'
 					];
@@ -275,106 +317,127 @@ if(isset($_SESSION['username'])) {
 						'mobile' => $phone,
 						'voucher_hash' => $hash
 					];
-					curl_setopt($ch, CURLOPT_URL,"https://gift.truemoney.com/campaign/vouchers/$hash/redeem");
+					curl_setopt($ch, CURLOPT_URL, "https://gift.truemoney.com/campaign/vouchers/$hash/redeem");
 					curl_setopt($ch, CURLOPT_POST, 1);
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));           
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
 					curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-					curl_setopt ($ch, CURLOPT_SSLVERSION, 7);
-					curl_setopt( $ch, CURLOPT_USERAGENT, "aaaaaaaaaaa" );
-					$result     = curl_exec ($ch);
+					curl_setopt($ch, CURLOPT_SSLVERSION, 7);
+					curl_setopt($ch, CURLOPT_USERAGENT, "aaaaaaaaaaa");
+					$result = curl_exec($ch);
 					$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-					return json_decode($result,true);
+					return json_decode($result, true);
 				}
 			}
 			$topup_truewallet = new topup();
-			$truewallet = (object) $topup_truewallet->giftcode($link ,$phone);
-			
-			if(@$truewallet->status['code'] == 'VOUCHER_OUT_OF_STOCK'){
-				DisplayMSG('error','Error', 'ซองเติมเงินนี้ถูกใช้งานไปแล้ว','true');
+			$truewallet = (object) $topup_truewallet->giftcode($link, $phone);
+
+			if (@$truewallet->status['code'] == 'VOUCHER_OUT_OF_STOCK') {
+				DisplayMSG('error', 'Error', 'ซองเติมเงินนี้ถูกใช้งานไปแล้ว', 'true');
 				// ซองเติมเงินนี้ถูกใช้งานไปแล้ว
-			}elseif(@$truewallet->status['code'] == 'VOUCHER_EXPIRED'){
-				DisplayMSG('error','Error', 'ซองเติมเงินนี้หมดอายุ','true');
+			} elseif (@$truewallet->status['code'] == 'VOUCHER_EXPIRED') {
+				DisplayMSG('error', 'Error', 'ซองเติมเงินนี้หมดอายุ', 'true');
 				// ซองเติมเงินนี้หมดอายุ
-			}
-			elseif(@$truewallet->status['code'] == 'VOUCHER_NOT_FOUND'){
-				DisplayMSG('error','Error', 'ไม่พบซอง','true');
+			} elseif (@$truewallet->status['code'] == 'VOUCHER_NOT_FOUND') {
+				DisplayMSG('error', 'Error', 'ไม่พบซอง', 'true');
 				// ไมพบซอง
-			}elseif(@$truewallet->status['code'] == null){
-				DisplayMSG('error','Error', 'ไม่พบซองอั๋งเปานี้','true');
+			} elseif (@$truewallet->status['code'] == null) {
+				DisplayMSG('error', 'Error', 'ไม่พบซองอั๋งเปานี้', 'true');
 				// กรอกมั่ว
-			}else{
-				if(@$truewallet->data['voucher']['member'] != "1"){
-					DisplayMSG('error','Error', 'ผู้รับซองต้องเป็น 1 คน','true');
+			} else {
+				if (@$truewallet->data['voucher']['member'] != "1") {
+					DisplayMSG('error', 'Error', 'ผู้รับซองต้องเป็น 1 คน', 'true');
 					// ผู้รับซองต้องเป็น 1 คน
-				}else{
+				} else {
 					// เติมเงินสำเร็จ
 					$price = $truewallet->data['voucher']['amount_baht'];
 					$sum_point = $users_point + $price;
 
-					$query1 = $connect->query("INSERT INTO `tbl_topup` (`id`, `topupby`, `topuptime`, `point`, `status`, `username`) VALUES (NULL, 'อั่งเป่า', '".time()."', '".$price."', '1', '".$users_username."');");
-					$query2 = $connect->query("UPDATE tbl_users SET point = '".$sum_point."' WHERE username = '".$users_username."'");
+					$topupby = 'อั่งเป่า';
+					$topuptime = time();
+					$status = '1';
+					$stmt1 = $connect->prepare("INSERT INTO `tbl_topup` (`topupby`, `topuptime`, `point`, `status`, `username`) VALUES (?, ?, ?, ?, ?)");
+					$stmt1->bind_param('ssiss', $topupby, $topuptime, $price, $status, $users_username);
+					$stmt1->execute();
 
-					DisplayMSG('success','คุณได้รับ '. $price . ' Point', 'ขอบคุณมากๆครับ','true');
-				
+					$stmt2 = $connect->prepare("UPDATE tbl_users SET point = ? WHERE username = ?");
+					$stmt2->bind_param('ds', $sum_point, $users_username);
+					$stmt2->execute();
+
+					DisplayMSG('success', 'คุณได้รับ ' . $price . ' Point', 'ขอบคุณมากๆครับ', 'true');
+
 				}
 			}
 
-		}else{
-			DisplayMSG('error','Error', 'กรุณายืนยันตัวตนใหม่','true');
+		} else {
+			DisplayMSG('error', 'Error', 'กรุณายืนยันตัวตนใหม่', 'true');
 		}
 	}
 
 	//สังซื้อ
-	if(isset($_GET['buyshopid'])) {
-        if(empty($_GET['id']))  {
-            DisplayMSG('error','Warning ❗️❗️', 'ไม่พบสินค้านี้ ✍️.','false');
-        }
-        $idshop = $connect->real_escape_string($_GET['id']);
+	if (isset($_GET['buyshopid'])) {
+		if (empty($_GET['id'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'ไม่พบสินค้านี้ ✍️.', 'false');
+		}
+		$idshop = $connect->real_escape_string($_GET['id']);
 		//ดึงข้อมูลสินค้า
-		$shop_info = $connect->query('SELECT * FROM `tbl_shop_id` WHERE `id` = "'.$idshop.'" ')->fetch_assoc();
+		$stmt_shop = $connect->prepare('SELECT * FROM `tbl_shop_id` WHERE `id` = ?');
+		$stmt_shop->bind_param('i', $idshop);
+		$stmt_shop->execute();
+		$shop_info = $stmt_shop->get_result()->fetch_assoc();
 
-		if($users_status == $vip_status){//vip
+		if ($users_status == $vip_status) {//vip
 			$point_this_shop = $shop_info['pointv'];
-		}else{
+		} else {
 			$point_this_shop = $shop_info['point'];
 		}
 
-		if(!empty($result_shopa['owner'])){
-			DisplayMSG('error','Warning ❗️❗️', 'สินค้านี้จำหน่ายไปแล้ว ✍️.','false');
-		}else if ($users_point >= $point_this_shop) {
+		if (!empty($result_shopa['owner'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'สินค้านี้จำหน่ายไปแล้ว ✍️.', 'false');
+		} else if ($users_point >= $point_this_shop) {
 			//อัพเดทเจ้าของสินค้า
-			$shop_update = $connect->query("UPDATE `tbl_shop_id` SET `status` = '2', `owner` = '".$users_username."' WHERE id = '".$idshop."';");
+			$status_update = '2';
+			$stmt_update = $connect->prepare("UPDATE `tbl_shop_id` SET `status` = ?, `owner` = ? WHERE id = ?");
+			$stmt_update->bind_param('ssi', $status_update, $users_username, $idshop);
+			$stmt_update->execute();
 			//ตัดเครดิต
 			$sums_point = $users_point - $point_this_shop;
-			$query_point = $connect->query("UPDATE tbl_users SET point = '".$sums_point."' WHERE username = '".$users_username."'");
+			$stmt_point = $connect->prepare("UPDATE tbl_users SET point = ? WHERE username = ?");
+			$stmt_point->bind_param('ds', $sums_point, $users_username);
+			$stmt_point->execute();
 
-			$add_history = $connect->query("INSERT INTO `tbl_shop_history` (`id`, `secret_info`, `timeadd`, `point`, `username`, `gameid`, `status`) 
-			VALUES (NULL, '".$shop_info['secret_info']."', '".time()."', '".$point_this_shop."', '".$users_username."', '".$idshop."', '1');");
-				
-			DisplayMSG('success','Buy Success!!','สั่งซื้อเรียบร้อย!!','true');
-		}else{
-			DisplayMSG('error','Warning ❗️❗️', 'เครดิตของคุณไม่เพียงพอ กรุณาเติมเงิน.','false');
+			$timeadd = time();
+			$status_history = '1';
+			$stmt_history = $connect->prepare("INSERT INTO `tbl_shop_history` (`secret_info`, `timeadd`, `point`, `username`, `gameid`, `status`) VALUES (?, ?, ?, ?, ?, ?)");
+			$stmt_history->bind_param('ssdssi', $shop_info['secret_info'], $timeadd, $point_this_shop, $users_username, $idshop, $status_history);
+			$stmt_history->execute();
+
+			DisplayMSG('success', 'Buy Success!!', 'สั่งซื้อเรียบร้อย!!', 'true');
+		} else {
+			DisplayMSG('error', 'Warning ❗️❗️', 'เครดิตของคุณไม่เพียงพอ กรุณาเติมเงิน.', 'false');
 		}
-        
-    }
+
+	}
 
 	//สั่งซื้อ API
-	if(isset($_GET['buy_pshop'])) {
-		if(empty($_GET['id']))  {
-			DisplayMSG('error','Warning ❗️❗️', 'ไม่พบสินค้า ✍️.','false');
+	if (isset($_GET['buy_pshop'])) {
+		if (empty($_GET['id'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'ไม่พบสินค้า ✍️.', 'false');
 		}
 		$idshop = $connect->real_escape_string($_GET['id']);
-		$shop_info = $connect->query('SELECT * FROM `tbl_shop_stock_api` WHERE `id` = "'.$idshop.'" ')->fetch_assoc();
+		$stmt_api = $connect->prepare('SELECT * FROM `tbl_shop_stock_api` WHERE `id` = ?');
+		$stmt_api->bind_param('i', $idshop);
+		$stmt_api->execute();
+		$shop_info = $stmt_api->get_result()->fetch_assoc();
 		$product_id = $shop_info['product_id'];
 		$product_point = $shop_info['price_web']; //ราคาเรา
 
-		if($users_point < $product_point){
-			DisplayMSG('error','Warning ❗️❗️', 'ยอดเงินของคุณไม่เพียงพอ.','true');
-		}else{
+		if ($users_point < $product_point) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'ยอดเงินของคุณไม่เพียงพอ.', 'true');
+		} else {
 			$url = 'https://byshop.me/api/buy';
 			$headers = array(
-			// 'User-Agent: HMPRSLIPAPI',
+				// 'User-Agent: HMPRSLIPAPI',
 			);
 
 			$data = array(
@@ -395,11 +458,11 @@ if(isset($_SESSION['username'])) {
 
 			if ($response === false) {
 
-			}else{
+			} else {
 				$data = json_decode($response, true);
 				// echo $data['status'];
-				if($data['status'] == "success"){
-					
+				if ($data['status'] == "success") {
+
 					$product_name = $data['name'];
 					$product_price = $data['price'];
 					$product_info = $data['info'];
@@ -408,23 +471,24 @@ if(isset($_SESSION['username'])) {
 					// $product_id = $product_id;
 					//check stock
 					// check point user
-					
-					//หัก point
+
 					$point_update = $users_point - $product_point;
-					$query_point = $connect->query("UPDATE `tbl_users` SET `point` = '".$point_update."' WHERE username = '".$users_username."';");
+					$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+					$stmt_point->bind_param('ds', $point_update, $users_username);
+					$stmt_point->execute();
 					//เก็บลงประวัติ
-					// $query = $connect->query("INSERT INTO `pum_history` (`id`, `name`, `secretcode`, `timeadd`, `product_id`, `price`, `username`, `status`) 
-					// VALUES (NULL, '".$product_name."', '".$product_info."', '".time()."', '".$product_id."', '".$product_price."', '".$users_username."', '1');");
-					$query = $connect->query("INSERT INTO `tbl_history_api` (`id`, `name`, `status`, `info`, `price`, `timeadd`, `username`) 
-					VALUES (NULL, '".$product_name."', '".$product_status."', '".$product_info."', '".$product_point."', '".time()."', '".$users_username."');");
+					$timeadd = time();
+					$stmt_history = $connect->prepare("INSERT INTO `tbl_history_api` (`name`, `status`, `info`, `price`, `timeadd`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_history->bind_param('sssdss', $product_name, $product_status, $product_info, $product_point, $timeadd, $users_username);
+					$stmt_history->execute();
 
-					DisplayMSG('success','สั่งซื้อ '.$product_name.' เรียบร้อย!!','ตรวจสอบสินค้าได้ที่ ประวัติการสั่งซื้อ','true');
+					DisplayMSG('success', 'สั่งซื้อ ' . $product_name . ' เรียบร้อย!!', 'ตรวจสอบสินค้าได้ที่ ประวัติการสั่งซื้อ', 'true');
 
-					}else{
-					
+				} else {
+
 					$product_message = $data['message'];
 					// DisplayMSG('error','ERROR [10121]', 'กรุณาติดต่่อ แอดมิน','false');
-					DisplayMSG('error','Warning ❗️❗️', ''.$product_message.'✍️.','true');
+					DisplayMSG('error', 'Warning ❗️❗️', '' . $product_message . '✍️.', 'true');
 				}
 			}
 
@@ -432,58 +496,71 @@ if(isset($_SESSION['username'])) {
 		}
 
 
-		
+
 
 	}
 
 	//สังซื้อ account
-	if(isset($_GET['buyshopaccount'])) {
-        if(empty($_GET['id']))  {
-            DisplayMSG('error','Warning ❗️❗️', 'ไม่พบสินค้านี้ ✍️.','false');
-        }
-        $idshop = $connect->real_escape_string($_GET['id']);
+	if (isset($_GET['buyshopaccount'])) {
+		if (empty($_GET['id'])) {
+			DisplayMSG('error', 'Warning ❗️❗️', 'ไม่พบสินค้านี้ ✍️.', 'false');
+		}
+		$idshop = $connect->real_escape_string($_GET['id']);
 		//ดึงข้อมูลสินค้า
-		$shop_info = $connect->query('SELECT * FROM `tbl_shop_id` WHERE `id` = "'.$idshop.'" ')->fetch_assoc();
-		if($users_status == $vip_status){//vip
+		$stmt_shop = $connect->prepare('SELECT * FROM `tbl_shop_id` WHERE `id` = ?');
+		$stmt_shop->bind_param('i', $idshop);
+		$stmt_shop->execute();
+		$shop_info = $stmt_shop->get_result()->fetch_assoc();
+		if ($users_status == $vip_status) {//vip
 			$point_this_shop = $shop_info['pointv'];
-		}else{
+		} else {
 			$point_this_shop = $shop_info['point'];
 		}
-		if($users_point >= $point_this_shop) {
+		if ($users_point >= $point_this_shop) {
 			//add get gif code
-			$account_info = $connect->query("SELECT * FROM `tbl_shop_stock` WHERE `shopid` = '".$idshop."' ORDER BY id ASC");
+			$stmt_account = $connect->prepare("SELECT * FROM `tbl_shop_stock` WHERE `shopid` = ? ORDER BY id ASC");
+			$stmt_account->bind_param('i', $idshop);
+			$stmt_account->execute();
+			$account_info = $stmt_account->get_result();
 			$num_account_info = $account_info->num_rows;
 			$res_account_info = $account_info->fetch_assoc();
-			if($num_account_info == 0){
-				DisplayMSG('error','Out of stock ❗️❗️', 'สินค้านี้หมด Stock ✍️.','false');
+			if ($num_account_info == 0) {
+				DisplayMSG('error', 'Out of stock ❗️❗️', 'สินค้านี้หมด Stock ✍️.', 'false');
 			}
 			//ตัดเครดิต
 			$sums_point = $users_point - $point_this_shop;
-			$query_point = $connect->query("UPDATE tbl_users SET point = '".$sums_point."' WHERE username = '".$users_username."'");
+			$stmt_point = $connect->prepare("UPDATE tbl_users SET point = ? WHERE username = ?");
+			$stmt_point->bind_param('ds', $sums_point, $users_username);
+			$stmt_point->execute();
 
 			$velue_item = $res_account_info['account'];
 			//add account to history
-			$add_history = $connect->query("INSERT INTO `tbl_shop_history` (`id`, `secret_info`, `timeadd`, `point`, `username`, `gameid`, `status`) 
-			VALUES (NULL, '".$velue_item."', '".time()."', '".$point_this_shop."', '".$users_username."', '".$idshop."', '1');");
+			$timeadd = time();
+			$status_history = '1';
+			$stmt_history = $connect->prepare("INSERT INTO `tbl_shop_history` (`secret_info`, `timeadd`, `point`, `username`, `gameid`, `status`) VALUES (?, ?, ?, ?, ?, ?)");
+			$stmt_history->bind_param('ssdssi', $velue_item, $timeadd, $point_this_shop, $users_username, $idshop, $status_history);
+			$stmt_history->execute();
 
 			//ลบ account ที่ซื้อแล้ว
-			$account_delete = $connect->query("DELETE FROM tbl_shop_stock WHERE id = '".$res_account_info['id']."';");
+			$stmt_del = $connect->prepare("DELETE FROM tbl_shop_stock WHERE id = ?");
+			$stmt_del->bind_param('i', $res_account_info['id']);
+			$stmt_del->execute();
 
-			DisplayMSG('success','Buy Success ❗️❗️','สั่งซื้อเรียบร้อย!!','true');
-		}else{
-			DisplayMSG('error','Warning ❗️❗️', 'เครดิตของคุณไม่เพียงพอ กรุณาเติมเงิน.','false');
+			DisplayMSG('success', 'Buy Success ❗️❗️', 'สั่งซื้อเรียบร้อย!!', 'true');
+		} else {
+			DisplayMSG('error', 'Warning ❗️❗️', 'เครดิตของคุณไม่เพียงพอ กรุณาเติมเงิน.', 'false');
 		}
-        
-    }
+
+	}
 
 	//spin game
-	if(isset($_GET['spin_api'])){
+	if (isset($_GET['spin_api'])) {
 
-		if($_SERVER['REQUEST_METHOD'] === 'POST')  {
-		// if(true)  {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			// if(true)  {
 
 			$point_use_game = $result_info_web['point_spin']; // ระบุราคาสุ่ม
-			if($users_point < $point_use_game ){
+			if ($users_point < $point_use_game) {
 				$put_data['status'] = 401;
 				$put_data['popup'] = "<script>
 					Swal.fire({
@@ -496,12 +573,15 @@ if(isset($_SESSION['username'])) {
 					}).then(function () {
 					})</script>";
 				echo json_encode($put_data);
-			}else{
+			} else {
 
 				// ----------------------
 				//หักเงิน
 				$nowpoint = $users_point - $point_use_game;
-				$update_point = $connect->query("UPDATE `tbl_users` SET `point` = '".$nowpoint."' WHERE username = '".$users_username."'");
+				$nowpoint = $users_point - $point_use_game;
+				$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+				$stmt_point->bind_param('ds', $nowpoint, $users_username);
+				$stmt_point->execute();
 				// ----------------------
 				$item_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'spin'");
 				$res_items = $item_reward->fetch_all(MYSQLI_ASSOC);
@@ -509,7 +589,7 @@ if(isset($_SESSION['username'])) {
 
 				$data = array();
 				// เพิ่มรายการใหม่ในอาร์เรย์
-				foreach($res_items as $res_item){
+				foreach ($res_items as $res_item) {
 					$newItem = array(
 						"id" => $res_item['id'],
 						"name" => $res_item['name'],
@@ -518,7 +598,7 @@ if(isset($_SESSION['username'])) {
 
 					array_push($data, $newItem);
 				}
-				
+
 				// สร้างอาร์เรย์ของตัวเลือกโดยพิจารณาเปอร์เซ็นต์
 				$weightedOptions = array();
 				foreach ($data as $item) {
@@ -535,15 +615,25 @@ if(isset($_SESSION['username'])) {
 				// echo "ID: " . $randomItem['id'] . ", Name: " . $randomItem['name'] . ", Percent: " . $randomItem['percent'] . "%";
 
 				//get item ที่สุ่มได้
-				$info_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'spin' AND id = '".$randomItem['id']."'")->fetch_assoc();
+				$stmt_reward = $connect->prepare("SELECT * FROM tbl_item_rewards WHERE game = 'spin' AND id = ?");
+				$stmt_reward->bind_param('i', $randomItem['id']);
+				$stmt_reward->execute();
+				$info_reward = $stmt_reward->get_result()->fetch_assoc();
 
-				if($info_reward['type'] == 1){//no reward
+				if ($info_reward['type'] == 1) {//no reward
 					//point user หลังอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add reward to history
-					$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', 'ไม่ได้รับรางวัล', '".time()."', '1', '".$users_username."');");
+					$val_msg = 'ไม่ได้รับรางวัล';
+					$timeadd = time();
+					$status = '1';
+					$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+					$stmt_hist->execute();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
@@ -562,28 +652,40 @@ if(isset($_SESSION['username'])) {
 					})</script>";
 					echo json_encode($put_data);
 
-				}else if($info_reward['type'] == 2){// point
+				} else if ($info_reward['type'] == 2) {// point
 					$value_random = explode('|', $info_reward['value']);
 					$min = $value_random[0];
 					$max = $value_random[1];
-					$point_random = rand($min,$max);
+					$point_random = rand($min, $max);
 					//point user ก่อนอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add point
 					$addpoint = $users_point + $point_random;
-					$add_point_random = $connect->query("UPDATE `tbl_users` SET `point` = '".$addpoint."' WHERE username = '".$users_username."'");
+					$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+					$stmt_point->bind_param('ds', $addpoint, $users_username);
+					$stmt_point->execute();
 
 					//add reward to history
-					$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$point_random." เครดิต', '".time()."', '1', '".$users_username."');");
+					$val_msg = $point_random . ' เครดิต';
+					$timeadd = time();
+					$status = '1';
+					$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+					$stmt_hist->execute();
 
 					//point user หลังอัพเดท
-					$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usrs->bind_param('s', $users_username);
+					$stmt_usrs->execute();
+					$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
-					$put_data['item_value'] = $point_random." เครดิต";
+					$put_data['item_value'] = $point_random . " เครดิต";
 					$put_data['point_now'] = number_format($info_user_now['point'], 2);
 					$put_data['point_nows'] = number_format($info_user_nows['point'], 2);
 					$put_data['popup'] = "<script>
@@ -600,32 +702,49 @@ if(isset($_SESSION['username'])) {
 					})</script>";
 					echo json_encode($put_data);
 
-				}else if($info_reward['type'] == 3){// gif code
-					
+				} else if ($info_reward['type'] == 3) {// gif code
+
 					//point user ก่อนอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add get gif code
-					$gifcode_info = $connect->query("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = '".$info_reward['id']."' ORDER BY id ASC");
+					$stmt_gif = $connect->prepare("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = ? ORDER BY id ASC");
+					$stmt_gif->bind_param('i', $info_reward['id']);
+					$stmt_gif->execute();
+					$gifcode_info = $stmt_gif->get_result();
 					$num_gifcode_info = $gifcode_info->num_rows;
 					$res_gifcode_info = $gifcode_info->fetch_assoc();
-					if($num_gifcode_info == 0){
+					if ($num_gifcode_info == 0) {
 						$velue_item = "Gif Code หมดติดต่อ แอดมิน!!";
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
-					}else{
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
+					} else {
 						$velue_item = $res_gifcode_info['code'];
 
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
 
 						//remove aftar add history
-						$gifcode_delete = $connect->query("DELETE FROM tbl_code_rewards WHERE id = '".$res_gifcode_info['id']."';");
+						$stmt_del = $connect->prepare("DELETE FROM tbl_code_rewards WHERE id = ?");
+						$stmt_del->bind_param('i', $res_gifcode_info['id']);
+						$stmt_del->execute();
 					}
 					//point user หลังอัพเดท
-					$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usrs->bind_param('s', $users_username);
+					$stmt_usrs->execute();
+					$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
@@ -646,7 +765,7 @@ if(isset($_SESSION['username'])) {
 					})</script>";
 					echo json_encode($put_data);
 
-				}else{
+				} else {
 					$put_data['status'] = 402;
 					$put_data['popup'] = "<script>
 						Swal.fire({
@@ -661,18 +780,18 @@ if(isset($_SESSION['username'])) {
 					echo json_encode($put_data);
 
 				}
-			}	
+			}
 			//-----------
 		}
 	}
 	//roller game
-	if(isset($_GET['roller_api'])){
+	if (isset($_GET['roller_api'])) {
 
-		if($_SERVER['REQUEST_METHOD'] === 'POST')  {
-		// if(true)  {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			// if(true)  {
 
 			$point_use_game = $result_info_web['point_roller']; // ระบุราคาสุ่ม
-			if($users_point < $point_use_game ){
+			if ($users_point < $point_use_game) {
 				$put_data['status'] = 401;
 				$put_data['popup'] = "<script>
 					Swal.fire({
@@ -685,12 +804,14 @@ if(isset($_SESSION['username'])) {
 					}).then(function () {
 					})</script>";
 				echo json_encode($put_data);
-			}else{
+			} else {
 
 				// ----------------------
 				//หักเงิน
 				$nowpoint = $users_point - $point_use_game;
-				$update_point = $connect->query("UPDATE `tbl_users` SET `point` = '".$nowpoint."' WHERE username = '".$users_username."'");
+				$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+				$stmt_point->bind_param('ds', $nowpoint, $users_username);
+				$stmt_point->execute();
 				// ----------------------
 				$item_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'roller'");
 				$res_items = $item_reward->fetch_all(MYSQLI_ASSOC);
@@ -698,7 +819,7 @@ if(isset($_SESSION['username'])) {
 
 				$data = array();
 				// เพิ่มรายการใหม่ในอาร์เรย์
-				foreach($res_items as $res_item){
+				foreach ($res_items as $res_item) {
 					$newItem = array(
 						"id" => $res_item['id'],
 						"name" => $res_item['name'],
@@ -707,7 +828,7 @@ if(isset($_SESSION['username'])) {
 
 					array_push($data, $newItem);
 				}
-				
+
 				// สร้างอาร์เรย์ของตัวเลือกโดยพิจารณาเปอร์เซ็นต์
 				$weightedOptions = array();
 				foreach ($data as $item) {
@@ -723,16 +844,26 @@ if(isset($_SESSION['username'])) {
 				$randomItem = $weightedOptions[$randomKey];
 				// echo "ID: " . $randomItem['id'] . ", Name: " . $randomItem['name'] . ", Percent: " . $randomItem['percent'] . "%";
 
-				//get item ที่สุ่มได้
-				$info_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'roller' AND id = '".$randomItem['id']."'")->fetch_assoc();
+				$stmt_reward = $connect->prepare("SELECT * FROM tbl_item_rewards WHERE game = 'roller' AND id = ?");
+				$stmt_reward->bind_param('i', $randomItem['id']);
+				$stmt_reward->execute();
+				$info_reward = $stmt_reward->get_result()->fetch_assoc();
 
-				if($info_reward['type'] == 1){//no reward
+				if ($info_reward['type'] == 1) {//no reward
 					//point user หลังอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add reward to history
-					$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', 'ไม่ได้รับรางวัล', '".time()."', '1', '".$users_username."');");
+					$val_msg = 'ไม่ได้รับรางวัล';
+					$game = 'roller';
+					$timeadd = time();
+					$status = '1';
+					$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+					$stmt_hist->execute();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
@@ -750,28 +881,40 @@ if(isset($_SESSION['username'])) {
 					}).then(function () {})</script>";
 					echo json_encode($put_data);
 
-				}else if($info_reward['type'] == 2){// point
+				} else if ($info_reward['type'] == 2) {// point
 					$value_random = explode('|', $info_reward['value']);
 					$min = $value_random[0];
 					$max = $value_random[1];
-					$point_random = rand($min,$max);
+					$point_random = rand($min, $max);
 					//point user ก่อนอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add point
 					$addpoint = $users_point + $point_random;
-					$add_point_random = $connect->query("UPDATE `tbl_users` SET `point` = '".$addpoint."' WHERE username = '".$users_username."'");
+					$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+					$stmt_point->bind_param('ds', $addpoint, $users_username);
+					$stmt_point->execute();
 
 					//add reward to history
-					$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$point_random." เครดิต', '".time()."', '1', '".$users_username."');");
+					$val_msg = $point_random . ' เครดิต';
+					$timeadd = time();
+					$status = '1';
+					$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+					$stmt_hist->execute();
 
 					//point user หลังอัพเดท
-					$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usrs->bind_param('s', $users_username);
+					$stmt_usrs->execute();
+					$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
-					$put_data['item_value'] = $point_random." เครดิต";
+					$put_data['item_value'] = $point_random . " เครดิต";
 					$put_data['point_now'] = number_format($info_user_now['point'], 2);
 					$put_data['point_nows'] = number_format($info_user_nows['point'], 2);
 					$put_data['popup'] = "<script>
@@ -787,32 +930,49 @@ if(isset($_SESSION['username'])) {
 						}).then(function () {})</script>";
 					echo json_encode($put_data);
 
-				}else if($info_reward['type'] == 3){// gif code
-					
+				} else if ($info_reward['type'] == 3) {// gif code
+
 					//point user ก่อนอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 					//add get gif code
-					$gifcode_info = $connect->query("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = '".$info_reward['id']."' ORDER BY id ASC");
+					$stmt_gif = $connect->prepare("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = ? ORDER BY id ASC");
+					$stmt_gif->bind_param('i', $info_reward['id']);
+					$stmt_gif->execute();
+					$gifcode_info = $stmt_gif->get_result();
 					$num_gifcode_info = $gifcode_info->num_rows;
 					$res_gifcode_info = $gifcode_info->fetch_assoc();
-					if($num_gifcode_info == 0){
+					if ($num_gifcode_info == 0) {
 						$velue_item = "Gif Code หมดติดต่อ แอดมิน!!";
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
-					}else{
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
+					} else {
 						$velue_item = $res_gifcode_info['code'];
 
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-						VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
 
 						//remove aftar add history
-						$gifcode_delete = $connect->query("DELETE FROM tbl_code_rewards WHERE id = '".$res_gifcode_info['id']."';");
+						$stmt_del = $connect->prepare("DELETE FROM tbl_code_rewards WHERE id = ?");
+						$stmt_del->bind_param('i', $res_gifcode_info['id']);
+						$stmt_del->execute();
 					}
 					//point user หลังอัพเดท
-					$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usrs->bind_param('s', $users_username);
+					$stmt_usrs->execute();
+					$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 					$put_data['status'] = 200;
 					$put_data['valueid'] = intval($randomItem['id']); //intval แปลงเป็น int
@@ -833,7 +993,7 @@ if(isset($_SESSION['username'])) {
 					})</script>";
 					echo json_encode($put_data);
 
-				}else{
+				} else {
 					$put_data['status'] = 402;
 					$put_data['popup'] = "<script>
 						Swal.fire({
@@ -848,18 +1008,18 @@ if(isset($_SESSION['username'])) {
 					echo json_encode($put_data);
 
 				}
-			}	
+			}
 			//-----------
 		}
 	}
 	//slot game
-	if(isset($_GET['slot_api'])){
+	if (isset($_GET['slot_api'])) {
 
-		if($_SERVER['REQUEST_METHOD'] === 'POST')  {
-		// if(true)  {
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			// if(true)  {
 
 			$point_use_game = $result_info_web['point_slot']; // ระบุราคาสุ่ม
-			if($users_point < $point_use_game ){
+			if ($users_point < $point_use_game) {
 				$put_data['status'] = 401;
 				$put_data['popup'] = "<script>
 					Swal.fire({
@@ -872,12 +1032,14 @@ if(isset($_SESSION['username'])) {
 					}).then(function () {
 					})</script>";
 				echo json_encode($put_data);
-			}else{
+			} else {
 
 				// ----------------------
 				//หักเงิน
 				$nowpoint = $users_point - $point_use_game;
-				$update_point = $connect->query("UPDATE `tbl_users` SET `point` = '".$nowpoint."' WHERE username = '".$users_username."'");
+				$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+				$stmt_point->bind_param('ds', $nowpoint, $users_username);
+				$stmt_point->execute();
 				// ----------------------
 				$item_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'slot'");
 				$res_items = $item_reward->fetch_all(MYSQLI_ASSOC);
@@ -885,7 +1047,7 @@ if(isset($_SESSION['username'])) {
 
 				$data = array();
 				// เพิ่มรายการใหม่ในอาร์เรย์
-				foreach($res_items as $res_item){
+				foreach ($res_items as $res_item) {
 					$newItem = array(
 						"id" => $res_item['id'],
 						"name" => $res_item['name'],
@@ -894,7 +1056,7 @@ if(isset($_SESSION['username'])) {
 
 					array_push($data, $newItem);
 				}
-				
+
 				// สร้างอาร์เรย์ของตัวเลือกโดยพิจารณาเปอร์เซ็นต์
 				$weightedOptions = array();
 				foreach ($data as $item) {
@@ -916,22 +1078,32 @@ if(isset($_SESSION['username'])) {
 				//echo "ID: " . $randomItem2['id'] . ", Name: " . $randomItem2['name'] . ", Percent: " . $randomItem2['percent'] . "%<br>";
 				//echo "ID: " . $randomItem3['id'] . ", Name: " . $randomItem3['name'] . ", Percent: " . $randomItem3['percent'] . "%<br>";
 
-				if($randomItem1['id'] == $randomItem2['id'] && $randomItem1['id'] == $randomItem3['id']){//รางวัลต้องกัน ให่เข้า if
+				if ($randomItem1['id'] == $randomItem2['id'] && $randomItem1['id'] == $randomItem3['id']) {//รางวัลต้องกัน ให่เข้า if
 					//echo "dd";
 					//get item ที่สุ่มได้
-					$info_reward = $connect->query("SELECT * FROM tbl_item_rewards WHERE game = 'slot' AND id = '".$randomItem1['id']."'")->fetch_assoc();
-					if($info_reward['type'] == 1){//no reward
+					$stmt_reward = $connect->prepare("SELECT * FROM tbl_item_rewards WHERE game = 'slot' AND id = ?");
+					$stmt_reward->bind_param('i', $randomItem1['id']);
+					$stmt_reward->execute();
+					$info_reward = $stmt_reward->get_result()->fetch_assoc();
+					if ($info_reward['type'] == 1) {//no reward
 						//point user หลังอัพเดท
-						$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+						$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+						$stmt_usr->bind_param('s', $users_username);
+						$stmt_usr->execute();
+						$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-							VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', 'ไม่ได้รับรางวัล', '".time()."', '1', '".$users_username."');");
+						$val_msg = 'ไม่ได้รับรางวัล';
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
 
 						$put_data['status'] = 200;
 						$put_data['valueid1'] = intval($randomItem1['id']); //intval แปลงเป็น int
-						$put_data['valueid2'] = intval($randomItem2['id']); 
-						$put_data['valueid3'] = intval($randomItem3['id']); 
+						$put_data['valueid2'] = intval($randomItem2['id']);
+						$put_data['valueid3'] = intval($randomItem3['id']);
 						$put_data['item_value'] = 0;
 						$put_data['point_now'] = number_format($info_user_now['point'], 2);
 						$put_data['popup'] = "<script>
@@ -946,30 +1118,42 @@ if(isset($_SESSION['username'])) {
 						}).then(function () {})</script>";
 						echo json_encode($put_data);
 
-					}else if($info_reward['type'] == 2){// point
+					} else if ($info_reward['type'] == 2) {// point
 						$value_random = explode('|', $info_reward['value']);
 						$min = $value_random[0];
 						$max = $value_random[1];
-						$point_random = rand($min,$max);
+						$point_random = rand($min, $max);
 						//point user ก่อนอัพเดท
-						$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+						$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+						$stmt_usr->bind_param('s', $users_username);
+						$stmt_usr->execute();
+						$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 						//add point
 						$addpoint = $users_point + $point_random;
-						$add_point_random = $connect->query("UPDATE `tbl_users` SET `point` = '".$addpoint."' WHERE username = '".$users_username."'");
+						$stmt_point = $connect->prepare("UPDATE `tbl_users` SET `point` = ? WHERE username = ?");
+						$stmt_point->bind_param('ds', $addpoint, $users_username);
+						$stmt_point->execute();
 
 						//add reward to history
-						$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-							VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$point_random." เครดิต', '".time()."', '1', '".$users_username."');");
+						$val_msg = $point_random . ' เครดิต';
+						$timeadd = time();
+						$status = '1';
+						$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+						$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $val_msg, $timeadd, $status, $users_username);
+						$stmt_hist->execute();
 
 						//point user หลังอัพเดท
-						$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+						$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+						$stmt_usrs->bind_param('s', $users_username);
+						$stmt_usrs->execute();
+						$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 						$put_data['status'] = 200;
 						$put_data['valueid1'] = intval($randomItem1['id']); //intval แปลงเป็น int
-						$put_data['valueid2'] = intval($randomItem2['id']); 
-						$put_data['valueid3'] = intval($randomItem3['id']); 
-						$put_data['item_value'] = $point_random." เครดิต";
+						$put_data['valueid2'] = intval($randomItem2['id']);
+						$put_data['valueid3'] = intval($randomItem3['id']);
+						$put_data['item_value'] = $point_random . " เครดิต";
 						$put_data['point_now'] = number_format($info_user_now['point'], 2);
 						$put_data['point_nows'] = number_format($info_user_nows['point'], 2);
 						$put_data['popup'] = "<script>
@@ -985,36 +1169,53 @@ if(isset($_SESSION['username'])) {
 							}).then(function () {})</script>";
 						echo json_encode($put_data);
 
-					}else if($info_reward['type'] == 3){// gif code
-						
+					} else if ($info_reward['type'] == 3) {// gif code
+
 						//point user ก่อนอัพเดท
-						$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+						$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+						$stmt_usr->bind_param('s', $users_username);
+						$stmt_usr->execute();
+						$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 
 						//add get gif code
-						$gifcode_info = $connect->query("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = '".$info_reward['id']."' ORDER BY id ASC");
+						$stmt_gif = $connect->prepare("SELECT * FROM `tbl_code_rewards` WHERE `reward_id` = ? ORDER BY id ASC");
+						$stmt_gif->bind_param('i', $info_reward['id']);
+						$stmt_gif->execute();
+						$gifcode_info = $stmt_gif->get_result();
 						$num_gifcode_info = $gifcode_info->num_rows;
 						$res_gifcode_info = $gifcode_info->fetch_assoc();
-						if($num_gifcode_info == 0){
+						if ($num_gifcode_info == 0) {
 							$velue_item = "Gif Code หมดติดต่อ แอดมิน!!";
 							//add reward to history
-							$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-							VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
-						}else{
+							$timeadd = time();
+							$status = '1';
+							$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+							$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+							$stmt_hist->execute();
+						} else {
 							$velue_item = $res_gifcode_info['code'];
 
 							//add reward to history
-							$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status` , `username`) 
-							VALUES (NULL, '".$info_reward['name']."', '".$info_reward['game']."', '".$velue_item."', '".time()."', '1', '".$users_username."');");
+							$timeadd = time();
+							$status = '1';
+							$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+							$stmt_hist->bind_param('ssssss', $info_reward['name'], $info_reward['game'], $velue_item, $timeadd, $status, $users_username);
+							$stmt_hist->execute();
 
 							//remove aftar add history
-							$gifcode_delete = $connect->query("DELETE FROM tbl_code_rewards WHERE id = '".$res_gifcode_info['id']."';");
+							$stmt_del = $connect->prepare("DELETE FROM tbl_code_rewards WHERE id = ?");
+							$stmt_del->bind_param('i', $res_gifcode_info['id']);
+							$stmt_del->execute();
 						}
 						//point user หลังอัพเดท
-						$info_user_nows = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+						$stmt_usrs = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+						$stmt_usrs->bind_param('s', $users_username);
+						$stmt_usrs->execute();
+						$info_user_nows = $stmt_usrs->get_result()->fetch_assoc();
 
 						$put_data['status'] = 200;
 						$put_data['valueid1'] = intval($randomItem1['id']); //intval แปลงเป็น int
-						$put_data['valueid2'] = intval($randomItem2['id']); 
+						$put_data['valueid2'] = intval($randomItem2['id']);
 						$put_data['valueid3'] = intval($randomItem3['id']);
 						$put_data['item_value'] = $info_reward['name'];
 						$put_data['point_now'] = number_format($info_user_now['point'], 2);
@@ -1033,7 +1234,7 @@ if(isset($_SESSION['username'])) {
 						})</script>";
 						echo json_encode($put_data);
 
-					}else{
+					} else {
 						$put_data['status'] = 402;
 						$put_data['popup'] = "<script>
 							Swal.fire({
@@ -1050,17 +1251,25 @@ if(isset($_SESSION['username'])) {
 					}
 
 
-				}else{
+				} else {
 					//point user หลังอัพเดท
-					$info_user_now = $connect->query("SELECT * FROM `tbl_users` WHERE `username` = '".$users_username."'")->fetch_assoc();
+					$stmt_usr = $connect->prepare("SELECT * FROM `tbl_users` WHERE `username` = ?");
+					$stmt_usr->bind_param('s', $users_username);
+					$stmt_usr->execute();
+					$info_user_now = $stmt_usr->get_result()->fetch_assoc();
 					//add reward to history
-					$add_reward_history = $connect->query("INSERT INTO `tbl_history_rewards` (`id`, `name`, `game`, `value`, `timeadd`, `status`, `username`) 
-						VALUES (NULL, 'ไม่ได้รับรางวัล', 'slot', 'ไม่ได้รับรางวัล', '".time()."', '1', '".$users_username."');");
+					$val_msg = 'ไม่ได้รับรางวัล';
+					$game = 'slot';
+					$timeadd = time();
+					$status = '1';
+					$stmt_hist = $connect->prepare("INSERT INTO `tbl_history_rewards` (`name`, `game`, `value`, `timeadd`, `status`, `username`) VALUES (?, ?, ?, ?, ?, ?)");
+					$stmt_hist->bind_param('ssssss', $val_msg, $game, $val_msg, $timeadd, $status, $users_username);
+					$stmt_hist->execute();
 
 					$put_data['status'] = 200;
 					$put_data['valueid1'] = intval($randomItem1['id']); //intval แปลงเป็น int
-					$put_data['valueid2'] = intval($randomItem2['id']); 
-					$put_data['valueid3'] = intval($randomItem3['id']); 
+					$put_data['valueid2'] = intval($randomItem2['id']);
+					$put_data['valueid3'] = intval($randomItem3['id']);
 					$put_data['item_value'] = 0;
 					$put_data['point_now'] = number_format($info_user_now['point'], 2);
 					$put_data['popup'] = "<script>
@@ -1076,7 +1285,7 @@ if(isset($_SESSION['username'])) {
 					echo json_encode($put_data);
 
 				}
-			}	
+			}
 			//-----------
 		}
 	}
@@ -1086,7 +1295,7 @@ if(isset($_SESSION['username'])) {
 }
 
 // อัพเดตสต็อค
-if(isset($_GET['UpdateStock'])) {
+if (isset($_GET['UpdateStock'])) {
 
 	$api_key = 'KATqV515MGG8KztTpJTc3sDkI5cltP';
 
@@ -1103,7 +1312,7 @@ if(isset($_GET['UpdateStock'])) {
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-		CURLOPT_URL => 'https://byshop.me/api/product.php', 
+		CURLOPT_URL => 'https://byshop.me/api/product.php',
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_ENCODING => '',
 		CURLOPT_MAXREDIRS => 10,
@@ -1119,7 +1328,7 @@ if(isset($_GET['UpdateStock'])) {
 	$load_packz = json_decode($response);
 
 	// echo $response;
-	foreach ($load_packz as $data) :
+	foreach ($load_packz as $data):
 
 		//เช็คสถานะสินค้า
 		$check_stock = $data->stock;
@@ -1129,11 +1338,11 @@ if(isset($_GET['UpdateStock'])) {
 		$shop_name = $data->name;
 		$shop_id = $data->id;
 
-		// $query = $connect->query("INSERT INTO `tbl_shop_stock_api` (`id`, `product_id`, `name`, `price`, `price_web`, `img`, `stock`, `status`, `up`) 
+		// $query = $connect->query("INSERT INTO `tbl_shop_stock_api` (`id`, `product_id`, `name`, `price`, `price_web`, `img`, `stock`, `status`, `up`)
 		// VALUES (NULL, '".$shop_id."', '".$shop_name."', '".$shop_point."', '".$shop_point."', '".$shop_img ."', '".$check_stock."', '".$shop_status."', '');");
-		$query = $connect->query("UPDATE `tbl_shop_stock_api` SET `price` = '".$shop_point."', 
-		`stock` = '".$check_stock."',  
-		`status` = '".$shop_status."' WHERE product_id = '".$shop_id."';");
+		$stmt_update = $connect->prepare("UPDATE `tbl_shop_stock_api` SET `price` = ?, `stock` = ?, `status` = ? WHERE product_id = ?");
+		$stmt_update->bind_param('ssss', $shop_point, $check_stock, $shop_status, $shop_id);
+		$stmt_update->execute();
 
 	endforeach;
 
@@ -1144,58 +1353,74 @@ if(isset($_GET['UpdateStock'])) {
 
 
 
-function DisplayMSG($function,$title,$msg,$reload){
+function DisplayMSG($function, $title, $msg, $reload)
+{
 	global $url;
 	// $uri = $_SERVER['REQUEST_URI'];
-	if($reload == 'true') {
+	if ($reload == 'true') {
 		$data = exit("<script>$function('$title', '$msg', 'true');setTimeout(function(){ window.location.reload(); }, 2500);</script>");
 		// $data = exit("<script>$function('$title', '$msg', 'true');setTimeout(function(){ location.href = \"$url\"; }, 2500);</script>");
-	}else {
-	$data = exit("<script>$function('$title', '$msg', 'false');</script>");
+	} else {
+		$data = exit("<script>$function('$title', '$msg', 'false');</script>");
 	}
 	return $data;
 }
-function iDisplayMSG($function,$title,$msg,$reload,$url){
-	if(empty($url)) {
+function iDisplayMSG($function, $title, $msg, $reload, $url)
+{
+	if (empty($url)) {
 		$url = "..";
-	}else {
-		$url = $url;
 	}
-	if($function == 'isuccess' || $function == 'ierror') {
-		if($reload == 'true') {
+	if ($function == 'isuccess' || $function == 'ierror') {
+		if ($reload == 'true') {
 			$data = "<script>$function('$title', '$msg', 'true', '$url');setTimeout(function(){ location.href = \"$url\"; }, 2500);</script>";
-		}else {
+		} else {
 			$data = "<script>$function('$title', '$msg', 'false','');</script>";
 		}
-	}else {
-		if($reload == 'true') {
+	} else {
+		if ($reload == 'true') {
 			$data = "<script>$function('$title', '$msg', 'true');setTimeout(function(){ location.href = \"$url\"; }, 2500);</script>";
-		}else {
+		} else {
 			$data = "<script>$function('$title', '$msg', 'false');</script>";
 		}
 	}
 	echo $data;
 }
 
-$months =array( 
-	"0"=>"", "1"=>"มกราคม", "2"=>"กุมภาพันธ์", "3"=>"มีนาคม","4"=>"เมษายน","5"=>"พฤษภาคม","6"=>"มิถุนายน", "7"=>"กรกฎาคม","8"=>"สิงหาคม","9"=>"กันยายน","10"=>"ตุลาคม","11"=>"พฤศจิกายน","12"=>"ธันวาคม"
-		  );
-function th_full($time){
+$months = array(
+	"0" => "",
+	"1" => "มกราคม",
+	"2" => "กุมภาพันธ์",
+	"3" => "มีนาคม",
+	"4" => "เมษายน",
+	"5" => "พฤษภาคม",
+	"6" => "มิถุนายน",
+	"7" => "กรกฎาคม",
+	"8" => "สิงหาคม",
+	"9" => "กันยายน",
+	"10" => "ตุลาคม",
+	"11" => "พฤศจิกายน",
+	"12" => "ธันวาคม"
+);
+function th_full($time)
+{
 	global $months;
-	@$th.= date("H",$time);
-	@$th.= ":".date("i",$time);
-	@$th.= "  วันที่ ".date("j",$time);
-	@$th.= " ".$months[date("n",$time)];
-	@$th.= " พ.ศ.".(date("Y",$time)+543);
+	$th = '';
+	$th .= date("H", $time);
+	$th .= ":" . date("i", $time);
+	$th .= "  วันที่ " . date("j", $time);
+	$th .= " " . $months[date("n", $time)];
+	$th .= " พ.ศ." . (date("Y", $time) + 543);
 	return $th;
 }
-function th($time){
+function th($time)
+{
 	global $months;
-	@$th.= date("H",$time);
-	@$th.= ":".date("i",$time);
-	@$th.= " ".date("j",$time);
-	@$th.= " ".$months[date("n",$time)];
-	@$th.= " ".(date("Y",$time)+543);
+	$th = '';
+	$th .= date("H", $time);
+	$th .= ":" . date("i", $time);
+	$th .= " " . date("j", $time);
+	$th .= " " . $months[date("n", $time)];
+	$th .= " " . (date("Y", $time) + 543);
 	return $th;
 }
 

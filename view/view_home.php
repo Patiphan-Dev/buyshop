@@ -38,9 +38,7 @@
     </div> -->
 
 
-</div>
-<?php include('view_marquee.php') ?>
-<?php if(isset($_SESSION['username'])) :?>
+</div><?php if(isset($_SESSION['username'])) :?>
 
 
 

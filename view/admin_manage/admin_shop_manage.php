@@ -1,6 +1,7 @@
 <div class="col-md-12 col-sm-12 mt-2" data-aos="zoom-in">
     <div class="card mb-3">
-        <div class="card-header"><i class="fa-solid fa-caret-right" style="color:#F186A9;"></i> Manage Shop - จัดการสินค้า</div>
+        <div class="card-header"><i class="fa-solid fa-caret-right" style="color:#F186A9;"></i> Manage Shop -
+            จัดการสินค้า</div>
         <div class="card-body p-4">
 
             <a class="btn btn-primary mb-2" href="?page=manage&admin=manageshop">ทั้งหมด</a>
@@ -27,12 +28,17 @@
 
                     if (@$_GET['t'] == "id") {
                         $type_sql = "idgame";
-                        $result_shop = $connect->query("SELECT * FROM tbl_shop_id WHERE shoptype = '" . $type_sql . "';");
+                        $stmt = $connect->prepare("SELECT * FROM tbl_shop_id WHERE shoptype = ?");
+                        $stmt->bind_param('s', $type_sql);
+                        $stmt->execute();
+                        $result_shop = $stmt->get_result();
                     } else if (@$_GET['t'] == "account") {
                         $type_sql = "account";
-                        $result_shop = $connect->query("SELECT * FROM tbl_shop_id WHERE shoptype = '" . $type_sql . "';");
+                        $stmt = $connect->prepare("SELECT * FROM tbl_shop_id WHERE shoptype = ?");
+                        $stmt->bind_param('s', $type_sql);
+                        $stmt->execute();
+                        $result_shop = $stmt->get_result();
                     } else {
-                        $type_sql = "idgame";
                         $result_shop = $connect->query("SELECT * FROM tbl_shop_id;");
                     }
 
@@ -40,7 +46,7 @@
 
                     $res_shops = $result_shop->fetch_all(MYSQLI_ASSOC);
                     $i = 1;
-                    foreach ($res_shops as $res_shop) :  ?>
+                    foreach ($res_shops as $res_shop): ?>
                         <tr>
                             <td><?= $i++; ?></td>
                             <td>A00<?= $res_shop['id'] ?></td>
@@ -72,12 +78,16 @@
 
                             </td>
                             <td>
-                                <?php if ($res_shop['shoptype'] == "account") : ?>
-                                    <a href="?page=manage&admin=addaccount&id=<?= $res_shop['id'] ?>" class="btn btn-success btn-sm mb-2"><i class="fa-solid fa-folder-plus"></i> เพิ่มบัญชี</a>
+                                <?php if ($res_shop['shoptype'] == "account"): ?>
+                                    <a href="?page=manage&admin=addaccount&id=<?= $res_shop['id'] ?>"
+                                        class="btn btn-success btn-sm mb-2"><i class="fa-solid fa-folder-plus"></i>
+                                        เพิ่มบัญชี</a>
                                 <?php endif; ?>
 
-                                <a href="?page=manage&admin=editshop&id=<?= $res_shop['id'] ?>" class="btn btn-primary btn-sm mb-2"><i class="fa-solid fa-pen-to-square"></i> แก้ไช</a>
-                                <button onclick="delete_shop_id(<?= $res_shop['id'] ?>)" class="btn btn-danger btn-sm mb-2"><i class="fa-solid fa-trash"></i> ลบ</button>
+                                <a href="?page=manage&admin=editshop&id=<?= $res_shop['id'] ?>"
+                                    class="btn btn-primary btn-sm mb-2"><i class="fa-solid fa-pen-to-square"></i> แก้ไช</a>
+                                <button onclick="delete_shop_id(<?= $res_shop['id'] ?>)"
+                                    class="btn btn-danger btn-sm mb-2"><i class="fa-solid fa-trash"></i> ลบ</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>

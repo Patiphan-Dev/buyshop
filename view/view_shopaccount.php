@@ -38,8 +38,11 @@ foreach ($res_categorys as $res_category) :
 
 <?php
 if (isset($_GET['category'])) {
-    $idcategory = $connect->real_escape_string(@$_GET['category']);
-    $result = $connect->query("SELECT * FROM tbl_shop_id WHERE gameid = '" . $idcategory . "' AND status != '0' AND shoptype = 'account'  ORDER BY status ASC");
+    $idcategory = isset($_GET['category']) ? $_GET['category'] : '';
+    $stmt = $connect->prepare("SELECT * FROM tbl_shop_id WHERE gameid = ? AND status != '0' AND shoptype = 'account' ORDER BY status ASC");
+    $stmt->bind_param('s', $idcategory);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
     $result = $connect->query("SELECT * FROM tbl_shop_id WHERE status != '0' AND shoptype = 'account' ORDER BY status ASC");
 }

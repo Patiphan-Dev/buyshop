@@ -1,4 +1,9 @@
 <?php
+    // suppress deprecation notices from third-party libraries (e.g. Google API)
+    // these warnings are thrown when PHP parses the Google API source files
+    // and are not useful during normal operation.  We need to set this **before*
+    // loading the autoloader so that the notices are silenced during parsing.
+    error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
     require_once 'vendor/autoload.php';
     date_default_timezone_set("Asia/Bangkok");
 
@@ -12,7 +17,13 @@
     define("CODE_KEY", "GGEZT6QKKHWH8");
 
 
-    define('LOCAL_WEB', 'http://localhost/buyshop');
+    // compute base URL dynamically so CSS/JS links work regardless of
+    // whether built-in server, Apache, or a subdirectory is used.
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    // dirname of script path (e.g. /folder) - remove trailing slash
+    $path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+    define('LOCAL_WEB', $protocol.'://'.$host.$path);
     // --------------- google api faekbook --------------
     // include 'src/Facebook/autoload.php'; // path to your autoload.php
     define('Facebook_appId', '3602133873380379');
@@ -22,7 +33,14 @@
     $clientSecret = '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';
     $redirectUri = LOCAL_WEB.'/idpass.php?login_google';
     // create Client Request to access Google API
-	$client = new Google_Client();
+    // temporarily keep deprecation messages off while instantiating the
+    // Google client; the library triggers a bunch of notices about nullable
+    // parameter hints which we don't care about.
+    $oldReporting = error_reporting();
+    error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+    $client = new Google_Client();
+    // restore previous error reporting level for the rest of the script
+    error_reporting($oldReporting);
 	$client->setClientId($clientID);
 	$client->setClientSecret($clientSecret);
 	$client->setRedirectUri($redirectUri);
@@ -38,7 +56,10 @@
     $decryption_key = CODE_KEY;
     // --------------- encryp id pass in shop --------------
 
-    $host = 'localhost';
+    // use 127.0.0.1 instead of localhost to force TCP when socket isn't available
+    // (prevents "No such file or directory" errors on macOS MySQL installs).
+    // If you need a specific port, use '127.0.0.1:3306' or similar.
+    $host = '127.0.0.1';
     $user = 'root';
     $pass = '';
     $name = 'buyshop';

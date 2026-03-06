@@ -10,32 +10,41 @@
                 $idgmae = $connect->real_escape_string(@$_GET['id']);
             }
 
-            $result_slide_check = $connect->query("SELECT * FROM tbl_slide WHERE id = '" . $idgmae . "'")->num_rows;
-            $result_slide_edit = $connect->query("SELECT * FROM tbl_slide WHERE id = '" . $idgmae . "'")->fetch_assoc();
-            if ($result_slide_check == 0) :
-            ?>
+            $stmt = $connect->prepare("SELECT * FROM tbl_slide WHERE id = ?");
+            $stmt->bind_param('s', $idgmae);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $result_slide_check = $res->num_rows;
+            $result_slide_edit = $res->fetch_assoc();
+            if ($result_slide_check == 0):
+                ?>
                 <div class="alert alert-dismissible alert-success">
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <strong>Well done!</strong>successfully. you can <a href="?page=manage&admin=img_slide" class="alert-link">Add new Image Slide</a>.
+                    <strong>Well done!</strong>successfully. you can <a href="?page=manage&admin=img_slide"
+                        class="alert-link">Add new Image Slide</a>.
                 </div>
-            <?php else : ?>
+            <?php else: ?>
                 <div class="form-group">
                     <div class="text-center pointer">
-                        <img src="assets/img/slide/<?= $result_slide_edit['img'] ?>" alt="null" width="20%" id="output" onclick="click_image()">
+                        <img src="assets/img/slide/<?= $result_slide_edit['img'] ?>" alt="null" width="20%" id="output"
+                            onclick="click_image()">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="formFile" class="form-label mt-4">รูปภาพสไลด์ <span class="badge rounded-pill" style="font-size: 1rem;"></span></label>
+                    <label for="formFile" class="form-label mt-4">รูปภาพสไลด์ <span class="badge rounded-pill"
+                            style="font-size: 1rem;"></span></label>
                     <input class="form-control" type="file" id="photo" accept="image/*" onchange="loadFile(event)">
                     <!-- <input class="form-control" type="text" id="urlimg" placeholder="https://xspin/true50.jpg" value="<?= $stockcards['img'] ?>"> -->
                     <span id="msg" style="color:red"></span>
                 </div>
                 <div class="form-group">
                     <label for="formFile" class="form-label mt-2">ความสูง</label>
-                    <input class="form-control" type="text" id="height" placeholder="300px" value="<?= $result_slide_edit['height'] ?>">
+                    <input class="form-control" type="text" id="height" placeholder="300px"
+                        value="<?= $result_slide_edit['height'] ?>">
                 </div>
                 <div class="form-group mt-4">
-                    <a onclick="editslide()" class="btn btn-info w-100"><i class="fa-solid fa-folder-plus"></i> อัพเดทสไลด์</a>
+                    <a onclick="editslide()" class="btn btn-info w-100"><i class="fa-solid fa-folder-plus"></i>
+                        อัพเดทสไลด์</a>
                 </div>
             <?php endif; ?>
 
@@ -52,11 +61,12 @@
                 $result_category = $connect->query("SELECT * FROM tbl_slide");
                 $res_categorys = $result_category->fetch_all(MYSQLI_ASSOC);
                 $i = 1;
-                foreach ($res_categorys as $res_category) :
-                ?>
+                foreach ($res_categorys as $res_category):
+                    ?>
                     <tr>
                         <td style="text-align:left"><?= $i++; ?>.</td>
-                        <td style="text-align:center"><img src="assets/img/slide/<?= $res_category['img']; ?>" alt="<?= $res_category['img']; ?>" height="50px" width="200px"></td>
+                        <td style="text-align:center"><img src="assets/img/slide/<?= $res_category['img']; ?>"
+                                alt="<?= $res_category['img']; ?>" height="50px" width="200px"></td>
                         <!-- <td style="text-align:left"><?= $res_category['img']; ?></td> -->
                         <td style="text-align:left">
                             <?php
@@ -69,8 +79,12 @@
 
                         </td>
                         <td style="text-align:right">
-                            <a href="?page=manage&admin=img_slide_edit&id=<?= $res_category['id']; ?>" class="hvr-icon-up btn btn-info btn-sm"><i class="hvr-icon fa-solid fa-pen-to-square"></i> แก้ไข</a>
-                            <a onclick="delete_slide(<?= $res_category['id']; ?>)" class="hvr-icon-up btn btn-danger btn-sm"><i class="hvr-icon fa-solid fa-trash-can"></i> ลบ</a>
+                            <a href="?page=manage&admin=img_slide_edit&id=<?= $res_category['id']; ?>"
+                                class="hvr-icon-up btn btn-info btn-sm"><i class="hvr-icon fa-solid fa-pen-to-square"></i>
+                                แก้ไข</a>
+                            <a onclick="delete_slide(<?= $res_category['id']; ?>)"
+                                class="hvr-icon-up btn btn-danger btn-sm"><i class="hvr-icon fa-solid fa-trash-can"></i>
+                                ลบ</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -81,9 +95,9 @@
 </div>
 
 <script>
-    var loadFile = function(event) {
+    var loadFile = function (event) {
         var reader = new FileReader();
-        reader.onload = function() {
+        reader.onload = function () {
             var output = document.getElementById('output');
             output.src = reader.result;
         };
@@ -125,10 +139,10 @@
             contentType: false,
             cache: false,
             processData: false,
-            beforeSend: function() {
+            beforeSend: function () {
                 $('#msg').html('Loading......');
             },
-            success: function(data) {
+            success: function (data) {
                 $("#btn").prop("disabled", true);
                 $("#return").html(data);
                 $("#btn").prop("disabled", false);
@@ -156,10 +170,10 @@
             contentType: false,
             cache: false,
             processData: false,
-            beforeSend: function() {
+            beforeSend: function () {
                 $('#msg').html('Loading......');
             },
-            success: function(data) {
+            success: function (data) {
                 // console.log(data)
                 $("#btn").prop("disabled", true);
                 $("#return").html(data);
