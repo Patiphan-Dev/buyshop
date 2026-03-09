@@ -1,20 +1,19 @@
 <?php
-    // suppress deprecation notices from third-party libraries (e.g. Google API)
-    // these warnings are thrown when PHP parses the Google API source files
-    // and are not useful during normal operation.  We need to set this **before*
-    // loading the autoloader so that the notices are silenced during parsing.
+    // load environment variables and silence deprecation warnings early
     error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
     require_once 'vendor/autoload.php';
+
+    (\Dotenv\Dotenv::createImmutable(__DIR__))->load();
     date_default_timezone_set("Asia/Bangkok");
 
-    define('SITE_KEY', '6Lf9dswZAAAAAInMtWojJTOaAakOkKg1xBigU0oQ');
-    define('SECRET_KEY', '6Lf9dswZAAAAADtUjzALRbXMbSdtjl-T6QKKHWH8');
+    define('SITE_KEY', getenv('SITE_KEY'));
+    define('SECRET_KEY', getenv('SECRET_KEY'));
 
-    define('SECRET_WEB', 'GGEZ-T6QKKHWH8');
-    define("ENCRYPTION_KEY", "GGEZ-T6QKKHWH8!@#$%^&*");
+    define('SECRET_WEB', getenv('SECRET_WEB'));
+    define('ENCRYPTION_KEY', getenv('ENCRYPTION_KEY'));
 
-    define("CODE_IV", "1234567891011121");
-    define("CODE_KEY", "GGEZT6QKKHWH8");
+    define('CODE_IV', getenv('CODE_IV'));
+    define('CODE_KEY', getenv('CODE_KEY'));
 
 
     // compute base URL dynamically so CSS/JS links work regardless of
@@ -26,11 +25,11 @@
     define('LOCAL_WEB', $protocol.'://'.$host.$path);
     // --------------- google api faekbook --------------
     // include 'src/Facebook/autoload.php'; // path to your autoload.php
-    define('Facebook_appId', '3602133873380379');
+    define('Facebook_appId', getenv('FACEBOOK_APP_ID'));
     // --------------- google api login --------------
     // init configuration
-    $clientID = '33665884902-ni33ffaosroli2247jfh5gas1o6o4oj3.apps.googleusercontent.com';
-    $clientSecret = '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';
+    $clientID = getenv('GOOGLE_CLIENT_ID');
+    $clientSecret = getenv('GOOGLE_CLIENT_SECRET');
     $redirectUri = LOCAL_WEB.'/idpass.php?login_google';
     // create Client Request to access Google API
     // temporarily keep deprecation messages off while instantiating the
@@ -56,13 +55,11 @@
     $decryption_key = CODE_KEY;
     // --------------- encryp id pass in shop --------------
 
-    // use 127.0.0.1 instead of localhost to force TCP when socket isn't available
-    // (prevents "No such file or directory" errors on macOS MySQL installs).
-    // If you need a specific port, use '127.0.0.1:3306' or similar.
-    $host = '127.0.0.1';
-    $user = 'root';
-    $pass = '';
-    $name = 'buyshop';
+    // database connection parameters are stored in environment
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $user = getenv('DB_USER') ?: 'root';
+    $pass = getenv('DB_PASS') ?: '';
+    $name = getenv('DB_NAME') ?: 'buyshop';
 
     $admin_status = 7; //status admin db
     $vip_status = 5; //status vip db
